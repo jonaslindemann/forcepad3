@@ -3,8 +3,13 @@
 using namespace forcepad;
 using namespace graphics;
 
+#include "imgui.h"
+#include "rlimgui/rlImGui.h"
+
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+
+static bool g_open = true;
 
 ForcePadWindow::ForcePadWindow(int width, int height, std::string title)
     : RaylibWindow(width, height, title), m_renderTexture(nullptr), m_showMessageBox(false)
@@ -21,35 +26,27 @@ void ForcePadWindow::onSetup()
 void ForcePadWindow::onDraw()
 {
     ClearBackground(WHITE);
+
     m_renderTexture->beginDraw();
 
-    BeginBlendMode(BLEND_ALPHA);
+    BeginBlendMode(BLEND_ADDITIVE);
     if (currentMouseButton() == gui::MouseButton::LEFT_BUTTON)
     {
-        DrawCircle(mouseX(), this->monitorHeight() - mouseY(), 20, Color{0, 0, 0, 64});
+        DrawCircle(mouseX(), this->monitorHeight() - mouseY(), 20, Color{0, 0, 0, 32});
     }
     EndBlendMode();
 
     m_renderTexture->endDraw();
 
-    m_renderTexture->draw(0, 0);
+    m_renderTexture->setScale(1.0);
+    m_renderTexture->draw();
 
-    // DrawText("ForcePAD", 20, 20, 20, WHITE);
     DrawFPS(10, 10);
+}
 
-    /*
-    if (GuiButton(Rectangle{24, 24, 120, 30}, "#191#Show Message"))
-        m_showMessageBox = true;
-
-    if (m_showMessageBox)
-    {
-        int result =
-            GuiMessageBox(Rectangle{85, 70, 250, 100}, "#191#Message Box", "Hi! This is a message!", "Nice;Cool");
-
-        if (result >= 0)
-            m_showMessageBox = false;
-    }
-    */
+void ForcePadWindow::onDrawGui()
+{
+    ImGui::ShowDemoWindow(&g_open);
 }
 
 void ForcePadWindow::onUpdate()

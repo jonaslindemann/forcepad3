@@ -56,6 +56,7 @@ public:
     virtual void onClear();
     virtual void onUpdate();
     virtual void onDraw();
+    virtual void onDrawGui();
     virtual void onResize(int width, int height);
     virtual void onKeyPressed(int key);
     virtual void onMousePressed(MouseButton button, float x, float y);

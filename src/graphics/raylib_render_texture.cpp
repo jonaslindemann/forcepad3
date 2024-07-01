@@ -2,7 +2,8 @@
 
 using namespace graphics;
 
-RaylibRenderTexture::RaylibRenderTexture() : m_texture(), m_loaded(false), m_width(0), m_height(0)
+RaylibRenderTexture::RaylibRenderTexture()
+    : m_texture(), m_loaded(false), m_width(0), m_height(0), m_position({0, 0}), m_scale(1.0f)
 {}
 
 RaylibRenderTexture::~RaylibRenderTexture()
@@ -69,6 +70,14 @@ void graphics::RaylibRenderTexture::draw(int x, int y, Color tint)
     DrawTexture(m_texture.texture, x, y, tint);
 }
 
+void graphics::RaylibRenderTexture::draw()
+{
+    if (!m_loaded)
+        return;
+
+    DrawTextureEx(m_texture.texture, m_position, 0.0f, m_scale, WHITE);
+}
+
 int graphics::RaylibRenderTexture::width() const
 {
     return m_width;
@@ -87,4 +96,24 @@ float graphics::RaylibRenderTexture::widthF() const
 float graphics::RaylibRenderTexture::heightF() const
 {
     return float(m_height);
+}
+
+void graphics::RaylibRenderTexture::setPosition(Vector2 position)
+{
+    m_position = position;
+}
+
+void graphics::RaylibRenderTexture::setScale(float scale)
+{
+    m_scale = scale;
+}
+
+Vector2 graphics::RaylibRenderTexture::position() const
+{
+    return m_position;
+}
+
+float graphics::RaylibRenderTexture::scale() const
+{
+    return m_scale;
 }

@@ -1,5 +1,8 @@
 #include "gui/raylib_application.h"
 
+#include "imgui.h"
+#include "rlimgui/rlImGui.h"
+
 using namespace gui;
 
 RaylibApplication::RaylibApplication(RaylibWindowPtr window)
@@ -35,6 +38,38 @@ void RaylibApplication::loop()
         return;
 
     m_window->onInit();
+
+    rlImGuiSetup(true);
+
+    ImGuiIO &io = ImGui::GetIO();
+    auto font = io.Fonts->AddFontFromFileTTF("data/RopaSans-Regular.ttf", 22);
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+
+    io.FontDefault = font;
+
+    // ImGui::StyleColorsDark();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    ImGuiStyle newStyle;
+
+    newStyle.FrameRounding = 4;
+    newStyle.WindowRounding = 8;
+    newStyle.Colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.5f);
+    newStyle.Colors[ImGuiCol_TitleBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.8f);
+    newStyle.Colors[ImGuiCol_TitleBgActive] =
+        ImVec4(newStyle.Colors[ImGuiCol_TitleBgActive].x, newStyle.Colors[ImGuiCol_TitleBgActive].y,
+               newStyle.Colors[ImGuiCol_TitleBgActive].z, 0.8f);
+
+    newStyle.ScaleAllSizes(1.0f);
+    io.FontGlobalScale = 1.0f;
+
+    style = newStyle;
+
+    rlImGuiReloadFonts();
+
     m_window->onSetup();
 
     m_mousePos = GetMousePosition();
@@ -61,70 +96,111 @@ void RaylibApplication::loop()
 
         // Check mouse
 
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+        if (!ImGui::GetIO().WantCaptureMouse)
         {
-            auto mousePos = GetMousePosition();
-            m_currentMouseButton = MouseButton::LEFT_BUTTON;
-            m_window->onMouseDown(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
-        }
 
-        if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
-        {
-            auto mousePos = GetMousePosition();
-            m_currentMouseButton = MouseButton::RIGHT_BUTTON;
-            m_window->onMouseDown(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
-        }
-
-        if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
-        {
-            auto mousePos = GetMousePosition();
-            m_currentMouseButton = MouseButton::MIDDLE_BUTTON;
-            m_window->onMouseDown(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
-        }
-
-        if (noMouseButtonDown())
-        {
-            if (m_currentMouseButton == MouseButton::LEFT_BUTTON)
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 auto mousePos = GetMousePosition();
-                m_window->onMouseReleased(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
-                m_window->onMousePressed(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
-                m_lastMouseButton = MouseButton::LEFT_BUTTON;
-                m_currentMouseButton = MouseButton::NO_BUTTON;
+                m_currentMouseButton = MouseButton::LEFT_BUTTON;
+                m_window->onMouseDown(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
             }
-            if (m_currentMouseButton == MouseButton::RIGHT_BUTTON)
+
+            if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
             {
                 auto mousePos = GetMousePosition();
-                m_window->onMouseReleased(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
-                m_window->onMousePressed(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
-                m_lastMouseButton = MouseButton::RIGHT_BUTTON;
-                m_currentMouseButton = MouseButton::NO_BUTTON;
+                m_currentMouseButton = MouseButton::RIGHT_BUTTON;
+                m_window->onMouseDown(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
             }
-            if (m_currentMouseButton == MouseButton::MIDDLE_BUTTON)
+
+            if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
             {
                 auto mousePos = GetMousePosition();
-                m_window->onMouseReleased(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
-                m_window->onMousePressed(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
-                m_lastMouseButton = MouseButton::MIDDLE_BUTTON;
-                m_currentMouseButton = MouseButton::NO_BUTTON;
+                m_currentMouseButton = MouseButton::MIDDLE_BUTTON;
+                m_window->onMouseDown(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
             }
+
+            if (noMouseButtonDown())
+            {
+                if (m_currentMouseButton == MouseButton::LEFT_BUTTON)
+                {
+                    auto mousePos = GetMousePosition();
+                    m_window->onMouseReleased(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
+                    m_window->onMousePressed(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
+                    m_lastMouseButton = MouseButton::LEFT_BUTTON;
+                    m_currentMouseButton = MouseButton::NO_BUTTON;
+                }
+                if (m_currentMouseButton == MouseButton::RIGHT_BUTTON)
+                {
+                    auto mousePos = GetMousePosition();
+                    m_window->onMouseReleased(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
+                    m_window->onMousePressed(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
+                    m_lastMouseButton = MouseButton::RIGHT_BUTTON;
+                    m_currentMouseButton = MouseButton::NO_BUTTON;
+                }
+                if (m_currentMouseButton == MouseButton::MIDDLE_BUTTON)
+                {
+                    auto mousePos = GetMousePosition();
+                    m_window->onMouseReleased(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
+                    m_window->onMousePressed(MouseButton::MIDDLE_BUTTON, mousePos.x, mousePos.y);
+                    m_lastMouseButton = MouseButton::MIDDLE_BUTTON;
+                    m_currentMouseButton = MouseButton::NO_BUTTON;
+                }
+            }
+
+            // Check mouse move
+
+            m_mousePos = GetMousePosition();
+
+            if (m_mousePos.x != m_lastMousePos.x || m_mousePos.y != m_lastMousePos.y)
+                m_window->onMouseMove(m_mousePos.x, m_mousePos.y);
+
+            m_lastMousePos = m_mousePos;
         }
-
-        // Check mouse move
-
-        m_mousePos = GetMousePosition();
-
-        if (m_mousePos.x != m_lastMousePos.x || m_mousePos.y != m_lastMousePos.y)
-            m_window->onMouseMove(m_mousePos.x, m_mousePos.y);
-
-        m_lastMousePos = m_mousePos;
+        else
+        {
+            m_currentMouseButton = MouseButton::NO_BUTTON;
+            m_lastMouseButton = MouseButton::NO_BUTTON;
+        }
 
         // Update and draw
 
         m_window->onUpdate();
         m_window->onClear();
+
         BeginDrawing();
         m_window->onDraw();
+
+        rlImGuiBegin();
+
+        ImGuiWindowFlags window_flags =
+            ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground;
+
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGui::Begin("DockSpace", nullptr, window_flags);
+        ImGui::PopStyleVar(3);
+
+        // DockSpace
+        ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+        ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar;
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+        ImGui::End();
+
+        m_window->onDrawGui();
+
+        rlImGuiEnd();
+
         EndDrawing();
     }
 
@@ -135,18 +211,27 @@ void RaylibApplication::loop()
 
 bool gui::RaylibApplication::anyMouseButtonDown() const
 {
+    if (ImGui::GetIO().WantCaptureMouse)
+        return false;
+
     return IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsMouseButtonDown(MOUSE_RIGHT_BUTTON) ||
            IsMouseButtonDown(MOUSE_MIDDLE_BUTTON);
 }
 
 bool gui::RaylibApplication::noMouseButtonDown() const
 {
+    if (ImGui::GetIO().WantCaptureMouse)
+        return true;
+
     return !IsMouseButtonDown(MOUSE_LEFT_BUTTON) && !IsMouseButtonDown(MOUSE_RIGHT_BUTTON) &&
            !IsMouseButtonDown(MOUSE_MIDDLE_BUTTON);
 }
 
 gui::MouseButton gui::RaylibApplication::currentMouseButton() const
 {
+    if (ImGui::GetIO().WantCaptureMouse)
+        return MouseButton::NO_BUTTON;
+
     return m_currentMouseButton;
 }
 

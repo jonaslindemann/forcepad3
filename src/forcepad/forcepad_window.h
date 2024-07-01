@@ -25,6 +25,7 @@ public:
     virtual void onSetup() override;
     virtual void onUpdate() override;
     virtual void onDraw() override;
+    virtual void onDrawGui() override;
     virtual void onResize(int width, int height) override;
     virtual void onMousePressed(gui::MouseButton button, float x, float y) override;
     virtual void onMouseDown(gui::MouseButton button, float x, float y) override;

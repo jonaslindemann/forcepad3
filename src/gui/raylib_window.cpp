@@ -92,16 +92,7 @@ float gui::RaylibWindow::mouseY() const
 
 gui::MouseButton gui::RaylibWindow::currentMouseButton() const
 {
-    MouseButton button = MouseButton::NO_BUTTON;
-
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-        button = MouseButton::LEFT_BUTTON;
-    else if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
-        button = MouseButton::RIGHT_BUTTON;
-    else if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
-        button = MouseButton::MIDDLE_BUTTON;
-
-    return button;
+    return m_app->currentMouseButton();
 }
 
 void gui::RaylibWindow::onInit()
@@ -120,6 +111,9 @@ void gui::RaylibWindow::onUpdate()
 {}
 
 void gui::RaylibWindow::onDraw()
+{}
+
+void gui::RaylibWindow::onDrawGui()
 {}
 
 void gui::RaylibWindow::onResize(int width, int height)

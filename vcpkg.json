@@ -6,6 +6,10 @@
         "opengl",
         "raylib",
         "raygui",
-        "eigen3"
+        "eigen3",
+        {
+            "name": "imgui",
+            "features": ["docking-experimental"]
+        }
     ]
 }
