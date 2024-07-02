@@ -101,6 +101,12 @@ void gui::RaylibWindow::onInit()
     SetWindowState(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
 }
 
+void gui::RaylibWindow::onConfigGui()
+{}
+
+void gui::RaylibWindow::onStyleGui()
+{}
+
 void gui::RaylibWindow::onSetup()
 {}
 

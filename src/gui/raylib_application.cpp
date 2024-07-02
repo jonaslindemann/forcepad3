@@ -37,7 +37,11 @@ void RaylibApplication::loop()
     if (m_window == nullptr)
         return;
 
+    // Windows initialisation
+
     m_window->onInit();
+
+    // Setup ImGui config
 
     rlImGuiSetup(true);
 
@@ -47,10 +51,11 @@ void RaylibApplication::loop()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
-
     io.FontDefault = font;
 
-    // ImGui::StyleColorsDark();
+    m_window->onConfigGui();
+
+    // Setup ImGui style
 
     ImGuiStyle &style = ImGui::GetStyle();
     ImGuiStyle newStyle;
@@ -68,12 +73,20 @@ void RaylibApplication::loop()
 
     style = newStyle;
 
+    m_window->onStyleGui();
+
     rlImGuiReloadFonts();
+
+    // Call custom setup method
 
     m_window->onSetup();
 
+    // Initialize state variables
+
     m_mousePos = GetMousePosition();
     m_lastMousePos = m_mousePos;
+
+    // Main loop
 
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
@@ -163,15 +176,24 @@ void RaylibApplication::loop()
             m_lastMouseButton = MouseButton::NO_BUTTON;
         }
 
-        // Update and draw
+        // Call custom update and draw methods
 
         m_window->onUpdate();
         m_window->onClear();
 
+        // Start drawing
+
         BeginDrawing();
+
+        // Call window draw method
+
         m_window->onDraw();
 
+        // Draw ImGui
+
         rlImGuiBegin();
+
+        // Set ImGui window flags
 
         ImGuiWindowFlags window_flags =
             ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground;
@@ -187,15 +209,18 @@ void RaylibApplication::loop()
                         ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
+        // Handle docking
+
         ImGui::Begin("DockSpace", nullptr, window_flags);
         ImGui::PopStyleVar(3);
 
-        // DockSpace
         ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
         ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_AutoHideTabBar;
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
         ImGui::End();
+
+        // Custom GUI drawing method
 
         m_window->onDrawGui();
 
@@ -204,7 +229,11 @@ void RaylibApplication::loop()
         EndDrawing();
     }
 
+    // Call window close method.
+
     m_window->onClose();
+
+    // Close window
 
     CloseWindow();
 }

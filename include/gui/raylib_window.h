@@ -52,6 +52,8 @@ public:
     MouseButton currentMouseButton() const;
 
     virtual void onInit();
+    virtual void onConfigGui();
+    virtual void onStyleGui();
     virtual void onSetup();
     virtual void onClear();
     virtual void onUpdate();
