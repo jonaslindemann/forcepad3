@@ -1,13 +1,17 @@
 #pragma once
 
 #include <memory>
+#include <filesystem>
 
-#include "raylib.h"
-#include "gui/raylib_window.h"
-#include "graphics/raylib_image.h"
-#include "graphics/raylib_texture.h"
-#include "graphics/raylib_render_texture.h"
+#include <raylib.h>
+#include <gui/raylib_window.h>
+#include <graphics/raylib_image.h>
+#include <graphics/raylib_texture.h>
+#include <graphics/raylib_render_texture.h>
 #include <graphics/brush.h>
+
+#include <gui/about_window.h>
+#include <gui/toolbar_window.h>
 
 namespace forcepad {
 
@@ -35,6 +39,16 @@ enum class AppMode {
 
 class ForcePadWindow : public gui::RaylibWindow {
 private:
+    std::string m_progPathStr;
+
+    std::filesystem::path m_progPath;
+    std::filesystem::path m_imagePath;
+    std::filesystem::path m_fontPath;
+    // std::filesystem::path m_pluginPath;
+    // std::filesystem::path m_mapPath;
+    // std::filesystem::path m_pythonPath;
+    // std::filesystem::path m_examplePath;
+
     graphics::RaylibRenderTexturePtr m_renderTexture;
 
     AppMode m_appMode;
@@ -45,10 +59,15 @@ private:
 
     bool m_showMessageBox;
 
+    gui::AboutWindowPtr m_aboutWindow;
+    gui::ToolbarWindowPtr m_toolbarWindow;
+
 public:
     ForcePadWindow(int width, int height, std::string title);
 
     static std::shared_ptr<ForcePadWindow> create(int width, int height, std::string title);
+
+    void setProgPath(std::string path);
 
     void setAppMode(AppMode mode);
     AppMode appMode() const;

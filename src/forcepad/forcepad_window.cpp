@@ -1,27 +1,58 @@
 #include "forcepad_window.h"
 
+#include <filesystem>
+
 using namespace forcepad;
 using namespace graphics;
+using namespace gui;
 
-#include "imgui.h"
-#include "rlimgui/rlImGui.h"
+#include <imgui.h>
+#include <rlimgui/rlImGui.h>
 
-static bool g_open = true;
+static bool g_open = false;
 
 ForcePadWindow::ForcePadWindow(int width, int height, std::string title)
     : RaylibWindow(width, height, title), m_renderTexture(nullptr), m_showMessageBox(false),
       m_appMode(AppMode::Material), m_drawingMode(DrawingMode::Brush), m_physicsMode(PhysicsMode::Load),
-      m_brush(nullptr)
+      m_brush(nullptr), m_aboutWindow(nullptr), m_toolbarWindow(nullptr), m_progPath("")
 {
     m_brush = Brush::create(20.0, 255);
 }
 
 void ForcePadWindow::onSetup()
 {
+    namespace fs = std::filesystem;
+
     SetTargetFPS(60);
 
     m_renderTexture = RaylibRenderTexture::create();
     m_renderTexture->load(this->monitorWidth(), this->monitorHeight());
+
+    m_aboutWindow = AboutWindow::create("About ForcePad");
+    m_aboutWindow->setVisible(false);
+    m_aboutWindow->setVersion("Version 3.0.0");
+    m_aboutWindow->setRelease("Release Alfa");
+    m_aboutWindow->setAuthor1("Jonas Lindemann");
+
+    m_toolbarWindow = ToolbarWindow::create("Drawing");
+
+    m_toolbarWindow->setVisible(true);
+
+    m_toolbarWindow->addButton("Box select", OfToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("square-dashed-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Brush", OfToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("paintbrush-fine-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Eraser", OfToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("eraser-solid.png")).string(), 1);
+    // m_toolbarWindow->addSpacer();
+    // m_toolbarWindow->addButton("Inspect", OfToolbarButtonType::Button,
+    //                            (m_imagePath / fs::path("tlinspect.png")).string());
+    // m_toolbarWindow->addButton("Delete", OfToolbarButtonType::Button,
+    //                            (m_imagePath / fs::path("tldelete.png")).string());
+    // m_toolbarWindow->addSpacer();
+    // m_toolbarWindow->addButton("Feedback", OfToolbarButtonType::RadioButton,
+    //                            (m_imagePath / fs::path("tlfeedback.png")).string(), 1);
+    // m_toolbarWindow->addButton("Run", OfToolbarButtonType::Button, (m_imagePath / fs::path("run.png")).string());
 }
 
 void ForcePadWindow::onDraw()
@@ -204,7 +235,9 @@ void ForcePadWindow::onDrawGui()
         if (ImGui::BeginMenu("Help"))
         {
             if (ImGui::MenuItem("About...", ""))
-            {}
+            {
+                m_aboutWindow->setVisible(true);
+            }
             if (ImGui::MenuItem("Homepage...", ""))
             {
 #ifdef WIN32
@@ -216,12 +249,21 @@ void ForcePadWindow::onDrawGui()
             if (ImGui::MenuItem("Log...", ""))
             {}
 
+            if (ImGui::MenuItem("Demo window", ""))
+            {
+                g_open = !g_open;
+            }
+
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
     }
 
-    // ImGui::ShowDemoWindow(&g_open);
+    if (g_open)
+        ImGui::ShowDemoWindow(&g_open);
+
+    m_aboutWindow->draw();
+    m_toolbarWindow->draw();
 }
 
 void ForcePadWindow::onUpdate()
@@ -260,6 +302,22 @@ void ForcePadWindow::onKeyPressed(int key)
 std::shared_ptr<ForcePadWindow> ForcePadWindow::create(int width, int height, std::string title)
 {
     return std::make_shared<ForcePadWindow>(width, height, title);
+}
+
+void forcepad::ForcePadWindow::setProgPath(std::string path)
+{
+    m_progPathStr = path;
+
+    namespace fs = std::filesystem;
+
+    m_progPath.assign(m_progPathStr);
+
+    m_fontPath = m_progPath / fs::path("fonts");
+    m_imagePath = m_progPath / fs::path("images");
+    // m_pluginPath = m_progPath / fs::path("plugins");
+    // m_mapPath = m_progPath / fs::path("maps");
+    // m_pythonPath = m_progPath / fs::path("python");
+    // m_examplePath = m_progPath / fs::path("examples");
 }
 
 void forcepad::ForcePadWindow::setAppMode(AppMode mode)

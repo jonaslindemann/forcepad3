@@ -27,6 +27,7 @@ public:
 
     Texture2D texture() const;
     Texture2D &texture();
+    Texture2D *texturePtr();
 
     int width() const;
     int height() const;

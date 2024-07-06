@@ -47,6 +47,11 @@ Texture2D &graphics::RaylibTexture::texture()
     return m_texture;
 }
 
+Texture2D *graphics::RaylibTexture::texturePtr()
+{
+    return &m_texture;
+}
+
 int graphics::RaylibTexture::width() const
 {
     return m_width;
