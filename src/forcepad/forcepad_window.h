@@ -9,9 +9,12 @@
 #include <graphics/raylib_texture.h>
 #include <graphics/raylib_render_texture.h>
 #include <graphics/brush.h>
+#include <graphics/drawing.h>
 
 #include <gui/about_window.h>
 #include <gui/toolbar_window.h>
+#include <gui/color_picker.h>
+#include <gui/layer_window.h>
 
 namespace forcepad {
 
@@ -50,17 +53,25 @@ private:
     // std::filesystem::path m_examplePath;
 
     graphics::RaylibRenderTexturePtr m_renderTexture;
+    graphics::RaylibRenderTexturePtr m_overlayTexture;
+
+    graphics::DrawingPtr m_drawing;
 
     AppMode m_appMode;
     DrawingMode m_drawingMode;
     PhysicsMode m_physicsMode;
 
+    Color m_currentColor;
+
     graphics::BrushPtr m_brush;
+    graphics::BrushPtr m_eraser;
 
     bool m_showMessageBox;
 
     gui::AboutWindowPtr m_aboutWindow;
     gui::ToolbarWindowPtr m_toolbarWindow;
+    gui::ColorPickerPtr m_colorPicker;
+    gui::LayerWindowPtr m_layerWindow;
 
 public:
     ForcePadWindow(int width, int height, std::string title);
@@ -88,6 +99,10 @@ public:
     virtual void onMouseDown(gui::MouseButton button, float x, float y) override;
     virtual void onMouseMove(float x, float y) override;
     virtual void onMouseReleased(gui::MouseButton button, float x, float y) override;
+
+    void onButtonClicked(gui::ToolbarButton &button);
+    void onButtonHover(gui::ToolbarButton &button);
+    void onColorChanged(Color color);
 };
 
 typedef std::shared_ptr<ForcePadWindow> ForcePadWindowPtr;

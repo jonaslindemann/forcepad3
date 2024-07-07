@@ -8,17 +8,17 @@
 
 namespace gui {
 
-enum class OfToolbarButtonType {
+enum class ToolbarButtonType {
     Button,
     ToggleButton,
     RadioButton,
     Spacer
 };
 
-class OfToolbarButton {
+class ToolbarButton {
 private:
     std::string m_name;
-    OfToolbarButtonType m_type;
+    ToolbarButtonType m_type;
     bool m_selected;
     bool m_enabled;
     int m_group;
@@ -26,9 +26,9 @@ private:
     graphics::RaylibTexturePtr m_texture;
 
 public:
-    OfToolbarButton(const std::string name = "Button", OfToolbarButtonType type = OfToolbarButtonType::Button,
-                    graphics::RaylibTexturePtr texture = nullptr, int group = -1, int id = -1);
-    virtual ~OfToolbarButton() = default;
+    ToolbarButton(const std::string name = "Button", ToolbarButtonType type = ToolbarButtonType::Button,
+                  graphics::RaylibTexturePtr texture = nullptr, int group = -1, int id = -1);
+    virtual ~ToolbarButton() = default;
 
     void setSelected(bool flag);
     bool selected();
@@ -46,19 +46,19 @@ public:
 
     graphics::RaylibTexturePtr texture();
 
-    OfToolbarButtonType type();
+    ToolbarButtonType type();
     std::string name();
     void setName(const std::string name);
 };
 
-typedef std::function<void(OfToolbarButton &button)> ButtonClickedFunc;
-typedef std::function<void(OfToolbarButton &button)> ButtonHoverFunc;
+typedef std::function<void(ToolbarButton &button)> ButtonClickedFunc;
+typedef std::function<void(ToolbarButton &button)> ButtonHoverFunc;
 
 class ToolbarWindow : public UiWindow {
 private:
     int m_selectedButton;
 
-    std::vector<OfToolbarButton> m_buttons;
+    std::vector<ToolbarButton> m_buttons;
     ImVec4 m_selectedColor;
     ImVec4 m_color;
 
@@ -71,7 +71,7 @@ public:
     ToolbarWindow(const std::string name);
     virtual ~ToolbarWindow();
 
-    void addButton(const std::string name, OfToolbarButtonType type = OfToolbarButtonType::Button,
+    void addButton(const std::string name, ToolbarButtonType type = ToolbarButtonType::Button,
                    std::string filename = "", int group = -1);
 
     void addSpacer();
@@ -80,7 +80,7 @@ public:
 
     void selectButton(int idx, int group);
 
-    OfToolbarButton &button(int idx);
+    ToolbarButton &button(int idx);
     size_t buttonCount();
 
     void update();

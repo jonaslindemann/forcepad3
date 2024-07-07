@@ -24,4 +24,4 @@ find_package(Stb REQUIRED)
 # Add more find_package statements for other required packages
 
 # Add the src subdirectory containing the main program
-add_subdirectory(src)  
+add_subdirectory(src) 

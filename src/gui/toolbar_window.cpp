@@ -21,7 +21,7 @@ ToolbarWindow::ToolbarWindow(const std::string name)
 ToolbarWindow::~ToolbarWindow()
 {}
 
-void gui::ToolbarWindow::addButton(const std::string name, OfToolbarButtonType type, std::string filename, int group)
+void gui::ToolbarWindow::addButton(const std::string name, ToolbarButtonType type, std::string filename, int group)
 {
     auto texture = RaylibTexture::create();
     auto image = RaylibImage::create();
@@ -32,7 +32,7 @@ void gui::ToolbarWindow::addButton(const std::string name, OfToolbarButtonType t
 }
 void gui::ToolbarWindow::addSpacer()
 {
-    m_buttons.emplace_back("", OfToolbarButtonType::Spacer, nullptr, -1, -1);
+    m_buttons.emplace_back("", ToolbarButtonType::Spacer, nullptr, -1, -1);
 }
 void gui::ToolbarWindow::addToolbarGroup(std::shared_ptr<ToolbarWindow> toolbar)
 {
@@ -71,7 +71,7 @@ void gui::ToolbarWindow::selectButton(int idx, int group)
     m_buttons[idx].select();
     m_selectedButton = idx;
 }
-gui::OfToolbarButton &gui::ToolbarWindow::button(int idx)
+gui::ToolbarButton &gui::ToolbarWindow::button(int idx)
 {
     return m_buttons[idx];
 }
@@ -124,7 +124,7 @@ void ToolbarWindow::doDraw()
         // if (button.texture() != nullptr)
         //     button.texture()->bind();
 
-        if (button.type() == OfToolbarButtonType::Button)
+        if (button.type() == ToolbarButtonType::Button)
         {
             // ImageButton(const char *str_id, ImTextureID user_texture_id, const ImVec2 &image_size,
             //             const ImVec2 &uv0 = ImVec2(0, 0), const ImVec2 &uv1 = ImVec2(1, 1),
@@ -151,7 +151,7 @@ void ToolbarWindow::doDraw()
                     m_onButtonHover(button);
             }
         }
-        else if (button.type() == OfToolbarButtonType::ToggleButton)
+        else if (button.type() == ToolbarButtonType::ToggleButton)
         {
             if (button.selected())
             {
@@ -176,7 +176,7 @@ void ToolbarWindow::doDraw()
             }
             ImGui::PopStyleColor(1);
         }
-        else if (button.type() == OfToolbarButtonType::RadioButton)
+        else if (button.type() == ToolbarButtonType::RadioButton)
         {
 
             if (button.selected())
@@ -202,7 +202,7 @@ void ToolbarWindow::doDraw()
             }
             ImGui::PopStyleColor(1);
         }
-        else if (button.type() == OfToolbarButtonType::Spacer)
+        else if (button.type() == ToolbarButtonType::Spacer)
         {
             ImGui::Dummy(ImVec2(10, 10));
         }
@@ -221,82 +221,82 @@ void ToolbarWindow::doDraw()
     ImGui::PopStyleColor(1);
 }
 
-OfToolbarButton::OfToolbarButton(const std::string name, OfToolbarButtonType type, graphics::RaylibTexturePtr texture,
-                                 int group, int id)
+ToolbarButton::ToolbarButton(const std::string name, ToolbarButtonType type, graphics::RaylibTexturePtr texture,
+                             int group, int id)
     : m_name{name}, m_selected{false}, m_enabled{true}, m_group{group}, m_id{id}, m_type{type}, m_texture{texture}
 {}
 
-void gui::OfToolbarButton::setSelected(bool flag)
+void gui::ToolbarButton::setSelected(bool flag)
 {
     m_selected = flag;
 }
 
-bool gui::OfToolbarButton::selected()
+bool gui::ToolbarButton::selected()
 {
     return m_selected;
 }
 
-void gui::OfToolbarButton::toggleSelected()
+void gui::ToolbarButton::toggleSelected()
 {
     m_selected = !m_selected;
 }
 
-void gui::OfToolbarButton::select()
+void gui::ToolbarButton::select()
 {
     m_selected = true;
 }
 
-void gui::OfToolbarButton::unselect()
+void gui::ToolbarButton::unselect()
 {
     m_selected = false;
 }
 
-void gui::OfToolbarButton::setEnabled(bool flag)
+void gui::ToolbarButton::setEnabled(bool flag)
 {
     m_enabled = flag;
 }
 
-bool gui::OfToolbarButton::enabled()
+bool gui::ToolbarButton::enabled()
 {
     return m_enabled;
 }
 
-void gui::OfToolbarButton::enable()
+void gui::ToolbarButton::enable()
 {
     m_enabled = true;
 }
 
-void gui::OfToolbarButton::disable()
+void gui::ToolbarButton::disable()
 {
     m_enabled = false;
 }
 
-int gui::OfToolbarButton::group()
+int gui::ToolbarButton::group()
 {
     return m_group;
 }
 
-int gui::OfToolbarButton::id()
+int gui::ToolbarButton::id()
 {
     return m_id;
 }
 
-graphics::RaylibTexturePtr gui::OfToolbarButton::texture()
+graphics::RaylibTexturePtr gui::ToolbarButton::texture()
 {
     return m_texture;
 }
 
-OfToolbarButtonType gui::OfToolbarButton::type()
+ToolbarButtonType gui::ToolbarButton::type()
 {
     return m_type;
 }
 
-std::string gui::OfToolbarButton::name()
+std::string gui::ToolbarButton::name()
 {
     return m_name;
 }
 
-void gui::OfToolbarButton::setName(const std::string name)
+void gui::ToolbarButton::setName(const std::string name)
 {
     m_name = name;
 }

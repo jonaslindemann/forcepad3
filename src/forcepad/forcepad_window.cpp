@@ -1,6 +1,7 @@
 #include "forcepad_window.h"
 
 #include <filesystem>
+#include <iostream>
 
 using namespace forcepad;
 using namespace graphics;
@@ -14,10 +15,9 @@ static bool g_open = false;
 ForcePadWindow::ForcePadWindow(int width, int height, std::string title)
     : RaylibWindow(width, height, title), m_renderTexture(nullptr), m_showMessageBox(false),
       m_appMode(AppMode::Material), m_drawingMode(DrawingMode::Brush), m_physicsMode(PhysicsMode::Load),
-      m_brush(nullptr), m_aboutWindow(nullptr), m_toolbarWindow(nullptr), m_progPath("")
-{
-    m_brush = Brush::create(20.0, 255);
-}
+      m_brush(nullptr), m_eraser(nullptr), m_aboutWindow(nullptr), m_toolbarWindow(nullptr), m_progPath(""),
+      m_imagePath(""), m_fontPath(""), m_progPathStr(""), m_currentColor(Color(0, 0, 0, 255)), m_colorPicker(nullptr)
+{}
 
 void ForcePadWindow::onSetup()
 {
@@ -25,8 +25,23 @@ void ForcePadWindow::onSetup()
 
     SetTargetFPS(60);
 
+    m_brush = Brush::create(20.0, 255);
+    m_brush->setBlending(false);
+    m_brush->setColor(Color(0, 0, 0, 255));
+
+    m_eraser = Brush::create(20.0, 255);
+    m_eraser->setColor(Color(255, 255, 255, 255));
+    m_eraser->setBlending(false);
+
     m_renderTexture = RaylibRenderTexture::create();
     m_renderTexture->load(this->monitorWidth(), this->monitorHeight());
+
+    m_overlayTexture = RaylibRenderTexture::create();
+    m_overlayTexture->load(this->monitorWidth(), this->monitorHeight());
+
+    m_drawing = Drawing::create(this->monitorWidth(), this->monitorHeight());
+    m_drawing->addLayer();
+    m_drawing->addLayer();
 
     m_aboutWindow = AboutWindow::create("About ForcePad");
     m_aboutWindow->setVisible(false);
@@ -34,16 +49,30 @@ void ForcePadWindow::onSetup()
     m_aboutWindow->setRelease("Release Alfa");
     m_aboutWindow->setAuthor1("Jonas Lindemann");
 
+    m_colorPicker = ColorPicker::create();
+    m_colorPicker->setVisible(true);
+
+    m_layerWindow = LayerWindow::create();
+    m_layerWindow->setVisible(true);
+    m_layerWindow->setDrawing(m_drawing);
+
     m_toolbarWindow = ToolbarWindow::create("Drawing");
 
     m_toolbarWindow->setVisible(true);
 
-    m_toolbarWindow->addButton("Box select", OfToolbarButtonType::RadioButton,
+    m_toolbarWindow->addButton("Box select", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("square-dashed-solid.png")).string(), 1);
-    m_toolbarWindow->addButton("Brush", OfToolbarButtonType::RadioButton,
+    m_toolbarWindow->addButton("Brush", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("paintbrush-fine-solid.png")).string(), 1);
-    m_toolbarWindow->addButton("Eraser", OfToolbarButtonType::RadioButton,
+    m_toolbarWindow->addButton("Eraser", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("eraser-solid.png")).string(), 1);
+
+    using std::placeholders::_1;
+    m_toolbarWindow->assignOnButtonClicked(std::bind(&ForcePadWindow::onButtonClicked, this, std::placeholders::_1));
+    m_toolbarWindow->assignOnButtonHover(std::bind(&ForcePadWindow::onButtonHover, this, std::placeholders::_1));
+    m_colorPicker->assignOnColorChanged(std::bind(&ForcePadWindow::onColorChanged, this, std::placeholders::_1));
+    m_colorPicker->setColor(m_currentColor);
+
     // m_toolbarWindow->addSpacer();
     // m_toolbarWindow->addButton("Inspect", OfToolbarButtonType::Button,
     //                            (m_imagePath / fs::path("tlinspect.png")).string());
@@ -55,19 +84,57 @@ void ForcePadWindow::onSetup()
     // m_toolbarWindow->addButton("Run", OfToolbarButtonType::Button, (m_imagePath / fs::path("run.png")).string());
 }
 
+void ForcePadWindow::onButtonClicked(gui::ToolbarButton &button)
+{
+    std::cout << "onButtonClicked: " + button.name() << "\n";
+    if (button.name() == "Box select")
+        m_drawingMode = DrawingMode::Select;
+    else if (button.name() == "Brush")
+        m_drawingMode = DrawingMode::Brush;
+    else if (button.name() == "Eraser")
+        m_drawingMode = DrawingMode::Eraser;
+}
+
+void ForcePadWindow::onButtonHover(gui::ToolbarButton &button)
+{}
+
+void forcepad::ForcePadWindow::onColorChanged(Color color)
+{
+    m_currentColor = color;
+    m_brush->setColor(color);
+}
+
 void ForcePadWindow::onDraw()
 {
     ClearBackground(WHITE);
 
-    m_renderTexture->beginDraw();
+    m_drawing->currentLayer()->beginDraw();
+
+    // m_renderTexture->beginDraw();
 
     if (currentMouseButton() == gui::MouseButton::LEFT_BUTTON)
-        m_brush->apply(mouseX(), this->monitorHeight() - mouseY());
+    {
+        if (m_drawingMode == DrawingMode::Brush)
+            m_brush->apply(mouseX(), this->monitorHeight() - mouseY());
+        else if (m_drawingMode == DrawingMode::Eraser)
+            m_eraser->apply(mouseX(), this->monitorHeight() - mouseY());
+    }
 
-    m_renderTexture->endDraw();
+    m_drawing->currentLayer()->endDraw();
 
-    m_renderTexture->setScale(1.0);
-    m_renderTexture->draw();
+    // m_renderTexture->endDraw();
+
+    // m_renderTexture->setScale(1.0);
+    // m_renderTexture->draw();
+
+    m_drawing->draw();
+
+    // m_overlayTexture->beginDraw();
+    // DrawCircle(150, 600, 120, Color{255, 0, 0, 255});
+    // DrawRectangle(50, 600, 200, 200, Color{255, 255, 0, 255});
+    // m_overlayTexture->endDraw();
+
+    // m_overlayTexture->draw();
 
     DrawFPS(10, 40);
 }
@@ -264,6 +331,8 @@ void ForcePadWindow::onDrawGui()
 
     m_aboutWindow->draw();
     m_toolbarWindow->draw();
+    m_colorPicker->draw();
+    m_layerWindow->draw();
 }
 
 void ForcePadWindow::onUpdate()
