@@ -26,12 +26,14 @@ void ForcePadWindow::onSetup()
     SetTargetFPS(60);
 
     m_brush = Brush::create(20.0, 255);
-    m_brush->setBlending(false);
     m_brush->setColor(Color(0, 0, 0, 255));
+    m_brush->setBlending(true);
+    m_brush->setBlendMode(BLEND_ALPHA);
 
     m_eraser = Brush::create(20.0, 255);
-    m_eraser->setColor(Color(255, 255, 255, 255));
-    m_eraser->setBlending(false);
+    m_eraser->setColor(Color(0, 0, 0, 0));
+    m_eraser->setBlending(true);
+    m_eraser->setBlendMode(BLEND_SUBTRACT_COLORS);
 
     m_renderTexture = RaylibRenderTexture::create();
     m_renderTexture->load(this->monitorWidth(), this->monitorHeight());
@@ -50,18 +52,23 @@ void ForcePadWindow::onSetup()
     m_aboutWindow->setAuthor1("Jonas Lindemann");
 
     m_colorPicker = ColorPicker::create();
-    m_colorPicker->setVisible(true);
+    m_colorPicker->setVisible(false);
 
     m_layerWindow = LayerWindow::create();
     m_layerWindow->setVisible(true);
     m_layerWindow->setDrawing(m_drawing);
 
     m_toolbarWindow = ToolbarWindow::create("Drawing");
+    m_toolbarWindow->setSize(250, 50);
 
     m_toolbarWindow->setVisible(true);
 
     m_toolbarWindow->addButton("Box select", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("square-dashed-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Select color", ToolbarButtonType::Button,
+                               (m_imagePath / fs::path("palette-solid.png")).string());
+    m_toolbarWindow->addButton("Layers", ToolbarButtonType::Button,
+                               (m_imagePath / fs::path("layer-group-solid.png")).string());
     m_toolbarWindow->addButton("Brush", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("paintbrush-fine-solid.png")).string(), 1);
     m_toolbarWindow->addButton("Eraser", ToolbarButtonType::RadioButton,
@@ -93,6 +100,12 @@ void ForcePadWindow::onButtonClicked(gui::ToolbarButton &button)
         m_drawingMode = DrawingMode::Brush;
     else if (button.name() == "Eraser")
         m_drawingMode = DrawingMode::Eraser;
+
+    if (button.name() == "Select color")
+    {
+        m_colorPicker->setVisible(true);
+        m_colorPicker->center();
+    }
 }
 
 void ForcePadWindow::onButtonHover(gui::ToolbarButton &button)

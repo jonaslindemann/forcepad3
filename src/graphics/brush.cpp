@@ -22,7 +22,7 @@ void graphics::Brush::apply(float x, float y)
 
     Color color = m_color;
     // color.a = m_hardness;
-    DrawCircle(x, y, m_radius, color);
+    DrawCircle(x, y, m_radius, m_color);
 
     if (m_blending)
         EndBlendMode();
