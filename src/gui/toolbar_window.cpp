@@ -138,7 +138,7 @@ void ToolbarWindow::doDraw()
             // 1),
             //                       m_color, m_selectedColor))
 
-            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(50, 50)))
+            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(40, 40)))
             {
                 if (m_onButtonClicked)
                 {
@@ -161,7 +161,7 @@ void ToolbarWindow::doDraw()
             {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0, 0, 0.5, 1.0});
             }
-            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(50, 50)))
+            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(40, 40)))
             {
                 button.toggleSelected();
                 if (m_onButtonClicked)
@@ -187,7 +187,7 @@ void ToolbarWindow::doDraw()
             {
                 ImGui::PushStyleColor(ImGuiCol_Button, m_color);
             }
-            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(50, 50)))
+            if (rlImGuiImageButtonSize("Blah", button.texture()->texturePtr(), ImVec2(40, 40)))
             {
                 this->selectButton(id - 1, button.group());
                 if (m_onButtonClicked)

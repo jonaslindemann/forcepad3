@@ -55,14 +55,17 @@ void ForcePadWindow::onSetup()
     m_colorPicker->setVisible(false);
 
     m_layerWindow = LayerWindow::create();
-    m_layerWindow->setVisible(true);
+    m_layerWindow->setVisible(false);
     m_layerWindow->setDrawing(m_drawing);
 
     m_toolbarWindow = ToolbarWindow::create("Drawing");
-    m_toolbarWindow->setSize(250, 50);
 
     m_toolbarWindow->setVisible(true);
 
+    m_toolbarWindow->addButton("Select", ToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("tlselect.png")).string(), 1);
+    m_toolbarWindow->addButton("Move", ToolbarButtonType::RadioButton, (m_imagePath / fs::path("tlmove.png")).string(),
+                               1);
     m_toolbarWindow->addButton("Box select", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("square-dashed-solid.png")).string(), 1);
     m_toolbarWindow->addButton("Select color", ToolbarButtonType::Button,
@@ -73,6 +76,8 @@ void ForcePadWindow::onSetup()
                                (m_imagePath / fs::path("paintbrush-fine-solid.png")).string(), 1);
     m_toolbarWindow->addButton("Eraser", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("eraser-solid.png")).string(), 1);
+
+    m_toolbarWindow->setSize(200, 30);
 
     using std::placeholders::_1;
     m_toolbarWindow->assignOnButtonClicked(std::bind(&ForcePadWindow::onButtonClicked, this, std::placeholders::_1));
@@ -95,16 +100,26 @@ void ForcePadWindow::onButtonClicked(gui::ToolbarButton &button)
 {
     std::cout << "onButtonClicked: " + button.name() << "\n";
     if (button.name() == "Box select")
-        m_drawingMode = DrawingMode::Select;
+        m_drawingMode = DrawingMode::SelectRect;
     else if (button.name() == "Brush")
         m_drawingMode = DrawingMode::Brush;
     else if (button.name() == "Eraser")
         m_drawingMode = DrawingMode::Eraser;
+    else if (button.name() == "Select")
+        m_drawingMode = DrawingMode::SelectShape;
+    else if (button.name() == "Move")
+        m_drawingMode = DrawingMode::SelectShape;
 
     if (button.name() == "Select color")
     {
         m_colorPicker->setVisible(true);
         m_colorPicker->center();
+    }
+
+    if (button.name() == "Layers")
+    {
+        m_layerWindow->setVisible(true);
+        m_layerWindow->center();
     }
 }
 
@@ -121,9 +136,7 @@ void ForcePadWindow::onDraw()
 {
     ClearBackground(WHITE);
 
-    m_drawing->currentLayer()->beginDraw();
-
-    // m_renderTexture->beginDraw();
+    m_drawing->beginDraw();
 
     if (currentMouseButton() == gui::MouseButton::LEFT_BUTTON)
     {
@@ -133,21 +146,10 @@ void ForcePadWindow::onDraw()
             m_eraser->apply(mouseX(), this->monitorHeight() - mouseY());
     }
 
-    m_drawing->currentLayer()->endDraw();
+    m_drawing->endDraw();
 
-    // m_renderTexture->endDraw();
-
-    // m_renderTexture->setScale(1.0);
-    // m_renderTexture->draw();
-
+    m_drawing->updateMouse(mouseX(), mouseY());
     m_drawing->draw();
-
-    // m_overlayTexture->beginDraw();
-    // DrawCircle(150, 600, 120, Color{255, 0, 0, 255});
-    // DrawRectangle(50, 600, 200, 200, Color{255, 255, 0, 255});
-    // m_overlayTexture->endDraw();
-
-    // m_overlayTexture->draw();
 
     DrawFPS(10, 40);
 }

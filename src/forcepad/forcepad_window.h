@@ -24,7 +24,8 @@ enum class DrawingMode {
     Rectangle,
     Ellipse,
     Line,
-    Select,
+    SelectShape,
+    SelectRect,
     Move,
     Copy
 };

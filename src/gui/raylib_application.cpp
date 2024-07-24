@@ -46,7 +46,7 @@ void RaylibApplication::loop()
     rlImGuiSetup(true);
 
     ImGuiIO &io = ImGui::GetIO();
-    auto font = io.Fonts->AddFontFromFileTTF("data/RopaSans-Regular.ttf", 22);
+    auto font = io.Fonts->AddFontFromFileTTF("data/RopaSans-Regular.ttf", 18);
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking

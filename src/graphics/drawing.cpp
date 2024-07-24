@@ -1,5 +1,10 @@
 #include <graphics/drawing.h>
 
+#include <graphics/rectangle.h>
+#include <graphics/ellipse.h>
+
+#include <cmath>
+
 using namespace graphics;
 
 Drawing::Drawing(int width, int height) : m_width(width), m_height(height), m_currentLayer(0)
@@ -14,31 +19,47 @@ std::shared_ptr<Drawing> graphics::Drawing::create(int width, int height)
 
 void Drawing::addLayer()
 {
-    m_renderLayers.push_back(RaylibRenderTexture::create());
-    m_renderLayers.back()->load(m_width, m_height);
+    auto layer = Layer::create(m_width, m_height, this);
+    m_layers.push_back(layer);
+    layer->setName("Layer " + std::to_string(m_layers.size()));
+}
 
-    LayerProperties prop;
-    prop.setName("Layer " + std::to_string(m_renderLayers.size()));
-    m_layerProperties.push_back(prop);
+void graphics::Drawing::updateMouse(float x, float y)
+{
+    m_mouseX = x;
+    m_mouseY = y;
+}
+
+void graphics::Drawing::updateCurrentShape(Shape *shape)
+{
+    m_currentShape = shape;
+}
+
+Shape *graphics::Drawing::currentShape()
+{
+    return m_currentShape;
 }
 
 void Drawing::beginDraw()
 {
-    currentLayer()->beginDraw();
+    currentLayer()->texture()->beginDraw();
 }
 
 void Drawing::draw()
 {
-    for (auto i = 0; i < m_renderLayers.size(); i++)
+    for (auto &layer : m_layers)
     {
-        if (m_layerProperties[i].visible())
-            m_renderLayers[i]->draw();
+        if (layer->visible())
+        {
+            layer->updateMouse(mouseX(), mouseY());
+            layer->draw();
+        }
     }
 }
 
 void Drawing::endDraw()
 {
-    currentLayer()->endDraw();
+    currentLayer()->texture()->endDraw();
 }
 
 void Drawing::setCurrentLayer(int index)
@@ -46,24 +67,24 @@ void Drawing::setCurrentLayer(int index)
     m_currentLayer = index;
 }
 
-RaylibRenderTexturePtr Drawing::currentLayer()
+LayerPtr Drawing::currentLayer()
 {
-    if (m_currentLayer < 0 || m_currentLayer >= m_renderLayers.size())
+    if (m_currentLayer < 0 || m_currentLayer >= m_layers.size())
     {
-        return RaylibRenderTexturePtr();
+        return LayerPtr();
     }
     else
-        return m_renderLayers[m_currentLayer];
+        return m_layers[m_currentLayer];
 }
 
-RaylibRenderTexturePtr Drawing::layer(int index)
+LayerPtr Drawing::layer(int index)
 {
-    if (index < 0 || index >= m_renderLayers.size())
+    if (index < 0 || index >= m_layers.size())
     {
-        return RaylibRenderTexturePtr();
+        return LayerPtr();
     }
     else
-        return m_renderLayers[index];
+        return m_layers[index];
 }
 
 int graphics::Drawing::currentLayerIndex() const
@@ -71,15 +92,9 @@ int graphics::Drawing::currentLayerIndex() const
     return m_currentLayer;
 }
 
-LayerProperties &graphics::Drawing::layerProp(int index)
-{
-    // TODO: insert return statement here
-    return m_layerProperties[index];
-}
-
 size_t Drawing::layerCount() const
 {
-    return m_renderLayers.size();
+    return m_layers.size();
 }
 
 int Drawing::width() const
@@ -92,52 +107,166 @@ int Drawing::height() const
     return m_height;
 }
 
-void LayerProperties::setPosition(Vector2 position)
+float graphics::Drawing::mouseX() const
+{
+    return m_mouseX;
+}
+
+float graphics::Drawing::mouseY() const
+{
+    return m_mouseY;
+}
+
+graphics::Layer::Layer(int width, int height, Drawing *drawing) : m_drawing(drawing)
+{
+    m_renderTexture = std::make_shared<RaylibRenderTexture>();
+    m_renderTexture->load(width, height);
+
+    for (auto i = 0; i < 20; i++)
+    {
+        auto choice = GetRandomValue(0, 1);
+
+        if (choice == 0)
+        {
+            auto ellipse = Ellipse::create();
+            ellipse->setOutline(false);
+            ellipse->setOutlineWidth(2.0f);
+            ellipse->setP0(Vector2{float(GetRandomValue(0, width)), float(GetRandomValue(0, height))});
+            ellipse->setRadiusX(float(GetRandomValue(0, width) * 0.1));
+            ellipse->setRadiusY(float(GetRandomValue(0, height) * 0.1));
+            ellipse->setFillColor(Color{(unsigned char)GetRandomValue(0, 255), (unsigned char)GetRandomValue(0, 255),
+                                        (unsigned char)GetRandomValue(0, 255), 255});
+            ellipse->setStrokeWidth(2.0f);
+            this->addShape(ellipse);
+        }
+        else if (choice == 1)
+        {
+            auto rect = Rectangle::create();
+            rect->setOutline(false);
+            rect->setOutlineWidth(2.0f);
+            rect->setP0(Vector2{float(GetRandomValue(0, width)), float(GetRandomValue(0, height))});
+            rect->setSize(Vector2{float(GetRandomValue(0, width) * 0.1), float(GetRandomValue(0, height) * 0.1)});
+            rect->setFillColor(Color{(unsigned char)GetRandomValue(0, 255), (unsigned char)GetRandomValue(0, 255),
+                                     (unsigned char)GetRandomValue(0, 255), 255});
+            rect->setStrokeWidth(2.0f);
+            this->addShape(rect);
+        }
+    }
+}
+
+std::shared_ptr<Layer> graphics::Layer::create(int width, int height, Drawing *drawing)
+{
+    return std::make_shared<Layer>(width, height, drawing);
+}
+
+void graphics::Layer::setPosition(Vector2 position)
 {
     m_position = position;
 }
 
-Vector2 LayerProperties::position() const
+Vector2 graphics::Layer::position() const
 {
     return m_position;
 }
 
-void LayerProperties::setScale(float scale)
+void graphics::Layer::setScale(float scale)
 {
     m_scale = scale;
 }
 
-float LayerProperties::scale() const
+float graphics::Layer::scale() const
 {
     return m_scale;
 }
 
-void LayerProperties::setVisible(bool visible)
+void graphics::Layer::setVisible(bool visible)
 {
     m_visible = visible;
 }
 
-bool LayerProperties::visible() const
+bool graphics::Layer::visible() const
 {
     return m_visible;
 }
 
-void graphics::LayerProperties::setName(const std::string &name)
+void graphics::Layer::setName(const std::string &name)
 {
     m_name = name;
 }
 
-std::string graphics::LayerProperties::name() const
+std::string graphics::Layer::name() const
 {
     return m_name;
 }
 
-void graphics::LayerProperties::setTint(Color tint)
+void graphics::Layer::setTint(Color tint)
 {
     m_tint = tint;
 }
 
-Color graphics::LayerProperties::tint() const
+Color graphics::Layer::tint() const
 {
     return m_tint;
+}
+
+RaylibRenderTexturePtr graphics::Layer::texture()
+{
+    return m_renderTexture;
+}
+
+Drawing *graphics::Layer::drawing()
+{
+    return m_drawing;
+}
+
+void graphics::Layer::updateMouse(float x, float y)
+{
+    m_mouseX = x;
+    m_mouseY = y;
+}
+
+void graphics::Layer::beginDraw()
+{
+    m_renderTexture->beginDraw();
+}
+
+void graphics::Layer::endDraw()
+{
+    m_renderTexture->endDraw();
+}
+
+void graphics::Layer::addShape(std::shared_ptr<Shape> shape)
+{
+    m_shapes.push_back(shape);
+}
+
+void graphics::Layer::draw()
+{
+    m_renderTexture->draw(0, 0, m_tint);
+
+    for (auto &shape : m_shapes)
+    {
+        if (shape->isInside(mouseX(), mouseY()) && (m_drawing->currentShape() == nullptr))
+        {
+            m_drawing->updateCurrentShape(shape.get());
+            shape->setHover(true);
+        }
+        else
+        {
+            m_drawing->updateCurrentShape(nullptr);
+            shape->setHover(false);
+        }
+
+        shape->draw();
+    }
+}
+
+float graphics::Layer::mouseX() const
+{
+    return m_mouseX;
+}
+
+float graphics::Layer::mouseY() const
+{
+    return m_mouseY;
 }
