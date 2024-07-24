@@ -107,8 +107,8 @@ Color graphics::Shape::hoverOutlineColor() const
 
 void graphics::Shape::setHoverFromFillAndStroke()
 {
-    m_hoverColor = ColorBrightness(m_fillColor, 0.30f);
-    m_hoverOutlineColor = ColorBrightness(m_strokeColor, 0.30f);
+    m_hoverColor = ColorBrightness(m_fillColor, 0.50f);
+    m_hoverOutlineColor = ColorBrightness(m_strokeColor, 0.50f);
 }
 
 void Shape::draw()

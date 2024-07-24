@@ -48,7 +48,10 @@ void gui::LayerWindow::doDraw()
     if (m_drawing != nullptr)
     {
         if (ImGui::Button("Add"))
-            m_drawing->addLayer();
+        {
+            if (m_drawing->layerCount() < m_layerVisible.size())
+                m_drawing->addLayer();
+        }
 
         ImGui::SameLine();
         ImGui::Button("Remove");
@@ -56,52 +59,42 @@ void gui::LayerWindow::doDraw()
 
         for (int i = 0; i < m_drawing->layerCount(); i++)
         {
-            m_layerVisible[i] = m_drawing->layer(i)->visible();
-            Color c = m_drawing->layer(i)->tint();
-            m_layerColor[i] = ImVec4(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, c.a / 255.0f);
+            if ((i < m_layerVisible.size()) && (i < m_layerColor.size()))
+            {
+                m_layerVisible[i] = m_drawing->layer(i)->visible();
+                Color c = m_drawing->layer(i)->tint();
+                m_layerColor[i] = ImVec4(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f, c.a / 255.0f);
+            }
         }
 
         for (int n = 0; n < m_drawing->layerCount(); n++)
         {
-            if (ImGui::RadioButton(std::format("##current{:d}", n).c_str(), m_drawing->currentLayerIndex() == n))
+            if ((n < m_layerVisible.size()) && (n < m_layerColor.size()))
             {
-                m_drawing->setCurrentLayer(n);
-            }
-            ImGui::SameLine();
-            if (ImGui::Checkbox(std::format("##visible{:d}", n).c_str(), &m_layerVisible[n]))
-            {
-                m_drawing->layer(n)->setVisible(m_layerVisible[n]);
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::ColorEdit4(std::format("Tint##{:d}", n).c_str(), (float *)&m_layerColor[n],
-                                  ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
-            {
-                m_drawing->layer(n)->setTint(Color(m_layerColor[n].x * 255, m_layerColor[n].y * 255,
-                                                   m_layerColor[n].z * 255, m_layerColor[n].w * 255));
-            }
-
-            ImGui::SameLine(200);
-            // TextCentered(m_drawing->layerProp(n).name());
-            ImGui::Text(m_drawing->layer(n)->name().c_str());
-        }
-        /*
-        if (ImGui::BeginListBox("##test", ImVec2(-FLT_MIN, -FLT_MIN)))
-        {
-            for (int n = 0; n < m_drawing->layerCount(); n++)
-            {
-                const bool is_selected = (m_drawing->currentLayerIndex() == n);
-                if (ImGui::Selectable(m_drawing->layerProp(n).name().c_str(), is_selected))
+                if (ImGui::RadioButton(std::format("##current{:d}", n).c_str(), m_drawing->currentLayerIndex() == n))
+                {
                     m_drawing->setCurrentLayer(n);
+                }
+                ImGui::SameLine();
+                if (ImGui::Checkbox(std::format("##visible{:d}", n).c_str(), &m_layerVisible[n]))
+                {
+                    m_drawing->layer(n)->setVisible(m_layerVisible[n]);
+                }
 
-                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();
+                ImGui::SameLine();
+
+                if (ImGui::ColorEdit4(std::format("Tint##{:d}", n).c_str(), (float *)&m_layerColor[n],
+                                      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
+                {
+                    m_drawing->layer(n)->setTint(Color(m_layerColor[n].x * 255, m_layerColor[n].y * 255,
+                                                       m_layerColor[n].z * 255, m_layerColor[n].w * 255));
+                }
+
+                ImGui::SameLine(200);
+                // TextCentered(m_drawing->layerProp(n).name());
+                ImGui::Text(m_drawing->layer(n)->name().c_str());
             }
-            ImGui::EndListBox();
         }
-        */
     }
 }
 

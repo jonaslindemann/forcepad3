@@ -10,8 +10,8 @@ namespace gui {
 class LayerWindow : public UiWindow {
 private:
     graphics::DrawingPtr m_drawing;
-    std::array<bool, 10> m_layerVisible;
-    std::array<ImVec4, 10> m_layerColor;
+    std::array<bool, 20> m_layerVisible;
+    std::array<ImVec4, 20> m_layerColor;
 
 public:
     LayerWindow();

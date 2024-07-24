@@ -4,6 +4,7 @@
 #include <graphics/ellipse.h>
 
 #include <cmath>
+#include <ranges>
 
 using namespace graphics;
 
@@ -47,14 +48,32 @@ void Drawing::beginDraw()
 
 void Drawing::draw()
 {
-    for (auto &layer : m_layers)
+    if (m_currentShape != nullptr)
+        m_currentShape->setHover(false);
+
+    m_currentShape = nullptr;
+
+    for (auto &layer : m_layers | std::views::reverse)
     {
         if (layer->visible())
         {
             layer->updateMouse(mouseX(), mouseY());
+            layer->checkHover();
+        }
+    }
+
+    for (auto &layer : m_layers)
+    {
+        if (layer->visible())
+        {
             layer->draw();
         }
     }
+
+    if (m_currentShape != nullptr)
+        m_currentShape->setHover(false);
+
+    m_currentShape = nullptr;
 }
 
 void Drawing::endDraw()
@@ -246,18 +265,30 @@ void graphics::Layer::draw()
 
     for (auto &shape : m_shapes)
     {
-        if (shape->isInside(mouseX(), mouseY()) && (m_drawing->currentShape() == nullptr))
+        shape->draw();
+    }
+}
+
+void graphics::Layer::checkHover()
+{
+    auto currentShape = m_drawing->currentShape();
+
+    for (auto &shape : m_shapes | std::views::reverse)
+    {
+        if (shape->isInside(mouseX(), mouseY()) && (currentShape == nullptr))
         {
-            m_drawing->updateCurrentShape(shape.get());
             shape->setHover(true);
+
+            if (currentShape != nullptr)
+                currentShape->setHover(false);
+
+            m_drawing->updateCurrentShape(shape.get());
+            currentShape = m_drawing->currentShape();
         }
         else
         {
-            m_drawing->updateCurrentShape(nullptr);
             shape->setHover(false);
         }
-
-        shape->draw();
     }
 }
 

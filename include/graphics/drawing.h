@@ -60,6 +60,7 @@ public:
     void addShape(std::shared_ptr<Shape> shape);
 
     void draw();
+    void checkHover();
 
     float mouseX() const;
     float mouseY() const;
