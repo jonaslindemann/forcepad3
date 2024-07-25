@@ -3,10 +3,18 @@
     "version": "0",
     "dependencies":
     [
-        "opengl",
-        "raylib",
-        "raygui",
-        "eigen3",
+        {
+            "name": "raylib",
+            "platform": "windows"
+        },
+        {
+            "name": "opengl",
+            "platform": "windows"
+        },    
+        {
+            "name": "eigen3",
+            "platform": "windows"
+        },
         "stb",
         {
             "name": "imgui",

@@ -86,8 +86,8 @@ void gui::LayerWindow::doDraw()
                 if (ImGui::ColorEdit4(std::format("Tint##{:d}", n).c_str(), (float *)&m_layerColor[n],
                                       ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
                 {
-                    m_drawing->layer(n)->setTint(Color(m_layerColor[n].x * 255, m_layerColor[n].y * 255,
-                                                       m_layerColor[n].z * 255, m_layerColor[n].w * 255));
+                    //m_drawing->layer(n)->setTint(Color(m_layerColor[n].x * 255u, m_layerColor[n].y * 255u,
+                    //                                   m_layerColor[n].z * 255u, m_layerColor[n].w * 255u));
                 }
 
                 ImGui::SameLine(200);

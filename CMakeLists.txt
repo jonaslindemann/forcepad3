@@ -16,11 +16,11 @@ set(VCPKG_ROOT "E:/vcpkg" CACHE STRING "Path to vcpkg directory containing the v
 
 # Find and include the necessary packages from vcpkg
 find_package(raylib CONFIG REQUIRED)
-find_path(RAYGUI_INCLUDE_DIRS "raygui.h")
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Stb REQUIRED) 
+find_package(glfw3 CONFIG REQUIRED)
 # Add more find_package statements for other required packages
 
 # Add the src subdirectory containing the main program

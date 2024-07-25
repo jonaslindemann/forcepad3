@@ -16,7 +16,7 @@ ForcePadWindow::ForcePadWindow(int width, int height, std::string title)
     : RaylibWindow(width, height, title), m_renderTexture(nullptr), m_showMessageBox(false),
       m_appMode(AppMode::Material), m_drawingMode(DrawingMode::Brush), m_physicsMode(PhysicsMode::Load),
       m_brush(nullptr), m_eraser(nullptr), m_aboutWindow(nullptr), m_toolbarWindow(nullptr), m_progPath(""),
-      m_imagePath(""), m_fontPath(""), m_progPathStr(""), m_currentColor(Color(0, 0, 0, 255)), m_colorPicker(nullptr)
+      m_imagePath(""), m_fontPath(""), m_progPathStr(""), m_currentColor(BLACK), m_colorPicker(nullptr)
 {}
 
 void ForcePadWindow::onSetup()
@@ -26,12 +26,12 @@ void ForcePadWindow::onSetup()
     SetTargetFPS(60);
 
     m_brush = Brush::create(20.0, 255);
-    m_brush->setColor(Color(0, 0, 0, 255));
+    m_brush->setColor(BLACK);
     m_brush->setBlending(true);
     m_brush->setBlendMode(BLEND_ALPHA);
 
     m_eraser = Brush::create(20.0, 255);
-    m_eraser->setColor(Color(0, 0, 0, 0));
+    m_eraser->setColor(BLANK);
     m_eraser->setBlending(true);
     m_eraser->setBlendMode(BLEND_SUBTRACT_COLORS);
 
