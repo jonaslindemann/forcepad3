@@ -16,7 +16,10 @@ ForcePadWindow::ForcePadWindow(int width, int height, std::string title)
     : RaylibWindow(width, height, title), m_renderTexture(nullptr), m_showMessageBox(false),
       m_appMode(AppMode::Material), m_drawingMode(DrawingMode::Brush), m_physicsMode(PhysicsMode::Load),
       m_brush(nullptr), m_eraser(nullptr), m_aboutWindow(nullptr), m_toolbarWindow(nullptr), m_progPath(""),
-      m_imagePath(""), m_fontPath(""), m_progPathStr(""), m_currentColor(BLACK), m_colorPicker(nullptr)
+      m_imagePath(""), m_fontPath(""), m_progPathStr(""), m_currentColor(BLACK), m_colorPicker(nullptr),
+      m_drawing(nullptr), m_layerWindow(nullptr), m_overlayTexture(nullptr), m_mouseX(-1.0f), m_mouseY(-1.0f),
+      m_mouseDown(false), m_mouseDownX(-1), m_mouseDownY(-1), m_mouseUpX(-1), m_mouseUpY(-1), m_newRectangle(nullptr),
+      m_newEllipse(nullptr), m_newLine(nullptr)
 {}
 
 void ForcePadWindow::onSetup()
@@ -54,6 +57,9 @@ void ForcePadWindow::onSetup()
     m_colorPicker = ColorPicker::create();
     m_colorPicker->setVisible(false);
 
+    m_linePropWindow = LinePropWindow::create();
+    m_linePropWindow->setVisible(false);
+
     m_layerWindow = LayerWindow::create();
     m_layerWindow->setVisible(false);
     m_layerWindow->setDrawing(m_drawing);
@@ -76,6 +82,12 @@ void ForcePadWindow::onSetup()
                                (m_imagePath / fs::path("paintbrush-fine-solid.png")).string(), 1);
     m_toolbarWindow->addButton("Eraser", ToolbarButtonType::RadioButton,
                                (m_imagePath / fs::path("eraser-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Rectangle", ToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("square-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Ellipse", ToolbarButtonType::RadioButton,
+                               (m_imagePath / fs::path("circle-solid.png")).string(), 1);
+    m_toolbarWindow->addButton("Line", ToolbarButtonType::RadioButton, (m_imagePath / fs::path("line.png")).string(),
+                               1);
 
     m_toolbarWindow->setSize(200, 30);
 
@@ -100,26 +112,36 @@ void ForcePadWindow::onButtonClicked(gui::ToolbarButton &button)
 {
     std::cout << "onButtonClicked: " + button.name() << "\n";
     if (button.name() == "Box select")
-        m_drawingMode = DrawingMode::SelectRect;
+        setDrawingMode(DrawingMode::SelectRect);
     else if (button.name() == "Brush")
-        m_drawingMode = DrawingMode::Brush;
+        setDrawingMode(DrawingMode::Brush);
     else if (button.name() == "Eraser")
-        m_drawingMode = DrawingMode::Eraser;
+        setDrawingMode(DrawingMode::Eraser);
     else if (button.name() == "Select")
-        m_drawingMode = DrawingMode::SelectShape;
+        setDrawingMode(DrawingMode::SelectShape);
     else if (button.name() == "Move")
-        m_drawingMode = DrawingMode::SelectShape;
+        setDrawingMode(DrawingMode::Move);
+    else if (button.name() == "Rectangle")
+        setDrawingMode(DrawingMode::Rectangle);
+    else if (button.name() == "Ellipse")
+        setDrawingMode(DrawingMode::Ellipse);
+    else if (button.name() == "Line")
+    {
+        setDrawingMode(DrawingMode::Line);
+        m_linePropWindow->setStrokeWidth(5.0f);
+        m_linePropWindow->show();
+    }
 
     if (button.name() == "Select color")
     {
         m_colorPicker->setVisible(true);
-        m_colorPicker->center();
+
+        m_linePropWindow->setVisible(true);
     }
 
     if (button.name() == "Layers")
     {
         m_layerWindow->setVisible(true);
-        m_layerWindow->center();
     }
 }
 
@@ -348,6 +370,7 @@ void ForcePadWindow::onDrawGui()
     m_toolbarWindow->draw();
     m_colorPicker->draw();
     m_layerWindow->draw();
+    m_linePropWindow->draw();
 }
 
 void ForcePadWindow::onUpdate()
@@ -365,17 +388,129 @@ void ForcePadWindow::onMousePressed(gui::MouseButton button, float x, float y)
 
 void forcepad::ForcePadWindow::onMouseDown(gui::MouseButton button, float x, float y)
 {
-    // std::printf("mouse down at %f, %f\n", x, y);
+    std::printf("mouse down at %f, %f\n", x, y);
+
+    m_mouseDown = true;
+    m_mouseDownX = x;
+    m_mouseDownY = y;
+
+    if (m_drawingMode == DrawingMode::Rectangle)
+    {
+        m_newRectangle = graphics::Rectangle::create();
+        m_newRectangle->setFillColor(m_currentColor);
+        m_newRectangle->setStrokeColor(m_linePropWindow->strokeColor());
+        m_newRectangle->setStrokeWidth(m_linePropWindow->strokeWidth());
+        m_newRectangle->setP0(Vector2{x, y});
+        m_newRectangle->setP1(Vector2{x, y});
+        m_drawing->setNewShape(m_newRectangle);
+    }
+
+    if (m_drawingMode == DrawingMode::Ellipse)
+    {
+        m_newEllipse = graphics::Ellipse::create();
+        m_newEllipse->setFillColor(m_currentColor);
+        m_newEllipse->setStrokeColor(m_linePropWindow->strokeColor());
+        m_newEllipse->setStrokeWidth(m_linePropWindow->strokeWidth());
+        m_newEllipse->setP0(Vector2{x, y});
+        m_newEllipse->setRadiusX(0.0f);
+        m_newEllipse->setRadiusY(0.0f);
+        m_drawing->setNewShape(m_newEllipse);
+    }
+
+    if (m_drawingMode == DrawingMode::Line)
+    {
+        m_newLine = graphics::Line::create();
+        m_newLine->setStrokeColor(m_linePropWindow->strokeColor());
+        m_newLine->setStrokeWidth(m_linePropWindow->strokeWidth());
+        m_newLine->setP0(Vector2{x, y});
+        m_newLine->setP1(Vector2{x, y});
+        m_drawing->setNewShape(m_newLine);
+    }
+    /*
+    else if (m_drawingMode == DrawingMode::SelectRect)
+    {
+        m_drawing->beginSelectRect(x, y);
+    }
+    else if (m_drawingMode == DrawingMode::SelectShape)
+    {
+        m_drawing->beginSelectShape(x, y);
+    }
+    else if (m_drawingMode == DrawingMode::Move)
+    {
+        m_drawing->beginMove(x, y);
+    }
+    */
 }
 
 void ForcePadWindow::onMouseMove(float x, float y)
 {
-    // std::printf("mouse moved to %f, %f\n", x, y);
+    std::printf("mouse moved to %f, %f\n", x, y);
+    m_mouseX = x;
+    m_mouseY = y;
+
+    if (m_drawingMode == DrawingMode::Rectangle)
+    {
+        if (m_newRectangle != nullptr)
+            m_newRectangle->setP1(Vector2{x, y});
+    }
+
+    if (m_drawingMode == DrawingMode::Ellipse)
+    {
+        if (m_newEllipse != nullptr)
+        {
+            auto dx = x - m_newEllipse->p0().x;
+            auto dy = y - m_newEllipse->p0().y;
+
+            std::printf("dx: %f, dy: %f\n", dx, dy);
+            m_newEllipse->setRadiusX(dx);
+            m_newEllipse->setRadiusY(dy);
+        }
+    }
+
+    if (m_drawingMode == DrawingMode::Line)
+    {
+        if (m_newLine != nullptr)
+            m_newLine->setP1(Vector2{x, y});
+    }
 }
 
 void forcepad::ForcePadWindow::onMouseReleased(gui::MouseButton button, float x, float y)
 {
-    // std::printf("mouse released at %f, %f\n", x, y);
+    std::printf("mouse released at %f, %f\n", x, y);
+    m_mouseDown = false;
+    m_mouseUpX = x;
+    m_mouseUpY = y;
+
+    if (m_drawingMode == DrawingMode::Rectangle)
+    {
+        if (m_newRectangle != nullptr)
+        {
+            m_newRectangle->setP1(Vector2{x, y});
+            m_drawing->currentLayer()->addShape(m_newRectangle);
+            m_drawing->clearNewShape();
+            m_newRectangle = nullptr;
+        }
+    }
+
+    if (m_drawingMode == DrawingMode::Ellipse)
+    {
+        if (m_newEllipse != nullptr)
+        {
+            m_drawing->currentLayer()->addShape(m_newEllipse);
+            m_drawing->clearNewShape();
+            m_newEllipse = nullptr;
+        }
+    }
+
+    if (m_drawingMode == DrawingMode::Line)
+    {
+        if (m_newLine != nullptr)
+        {
+            m_drawing->currentLayer()->addShape(m_newLine);
+            m_drawing->clearNewShape();
+            m_newLine = nullptr;
+        }
+    }
 }
 
 void ForcePadWindow::onKeyPressed(int key)
@@ -417,6 +552,15 @@ AppMode forcepad::ForcePadWindow::appMode() const
 void forcepad::ForcePadWindow::setDrawingMode(DrawingMode mode)
 {
     m_drawingMode = mode;
+
+    if (mode == DrawingMode::Brush)
+    {
+        m_brush->setColor(m_currentColor);
+    }
+    else if (mode == DrawingMode::Eraser)
+    {
+        m_brush->setColor(BLANK);
+    }
 }
 
 DrawingMode forcepad::ForcePadWindow::drawingMode() const

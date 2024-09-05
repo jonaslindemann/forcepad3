@@ -71,6 +71,7 @@ using LayerPtr = std::shared_ptr<Layer>;
 class Drawing {
 private:
     std::vector<LayerPtr> m_layers;
+    LayerPtr m_manipulationLayer{nullptr};
     int m_currentLayer{0};
     int m_width{-1};
     int m_height{-1};
@@ -78,6 +79,8 @@ private:
     float m_mouseY{-1.0f};
 
     Shape *m_currentShape{nullptr};
+
+    ShapePtr m_newShape{nullptr};
 
 public:
     Drawing(int width, int height);
@@ -95,6 +98,10 @@ public:
     void endDraw();
 
     void setCurrentLayer(int index);
+
+    void setNewShape(ShapePtr shape);
+    ShapePtr newShape();
+    void clearNewShape();
 
     LayerPtr currentLayer();
     LayerPtr layer(int index);

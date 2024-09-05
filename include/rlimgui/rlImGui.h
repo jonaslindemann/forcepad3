@@ -1,32 +1,32 @@
 /**********************************************************************************************
-*
-*   raylibExtras * Utilities and Shared Components for Raylib
-*
-*   rlImGui * basic ImGui integration
-*
-*   LICENSE: ZLIB
-*
-*   Copyright (c) 2024 Jeffery Myers
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy
-*   of this software and associated documentation files (the "Software"), to deal
-*   in the Software without restriction, including without limitation the rights
-*   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-*   copies of the Software, and to permit persons to whom the Software is
-*   furnished to do so, subject to the following conditions:
-*
-*   The above copyright notice and this permission notice shall be included in all
-*   copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-*   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-*   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-*   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-*   SOFTWARE.
-*
-**********************************************************************************************/
+ *
+ *   raylibExtras * Utilities and Shared Components for Raylib
+ *
+ *   rlImGui * basic ImGui integration
+ *
+ *   LICENSE: ZLIB
+ *
+ *   Copyright (c) 2024 Jeffery Myers
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a copy
+ *   of this software and associated documentation files (the "Software"), to deal
+ *   in the Software without restriction, including without limitation the rights
+ *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *   copies of the Software, and to permit persons to whom the Software is
+ *   furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *   SOFTWARE.
+ *
+ **********************************************************************************************/
 
 #pragma once
 
@@ -127,7 +127,7 @@ void rlImGuiImageSize(const Texture *image, int width, int height);
 /// </summary>
 /// <param name="image">The raylib texture to draw</param>
 /// <param name="size">The size of drawn image</param>
-void rlImGuiImageSizeV(const Texture* image, Vector2 size);
+void rlImGuiImageSizeV(const Texture *image, Vector2 size);
 
 /// <summary>
 /// Draw a portion texture as an image in an ImGui Context at a defined size
@@ -137,39 +137,43 @@ void rlImGuiImageSizeV(const Texture* image, Vector2 size);
 /// <param name="image">The raylib texture to draw</param>
 /// <param name="destWidth">The width of the drawn image</param>
 /// <param name="destHeight">The height of the drawn image</param>
-/// <param name="sourceRect">The portion of the texture to draw as an image. Negative values for the width and height will flip the image</param>
-void rlImGuiImageRect(const Texture* image, int destWidth, int destHeight, Rectangle sourceRect);
+/// <param name="sourceRect">The portion of the texture to draw as an image. Negative values for the width and height
+/// will flip the image</param>
+void rlImGuiImageRect(const Texture *image, int destWidth, int destHeight, ::Rectangle sourceRect);
 
 /// <summary>
-/// Draws a render texture as an image an ImGui Context, automatically flipping the Y axis so it will show correctly on screen
+/// Draws a render texture as an image an ImGui Context, automatically flipping the Y axis so it will show correctly on
+/// screen
 /// </summary>
 /// <param name="image">The render texture to draw</param>
-void rlImGuiImageRenderTexture(const RenderTexture* image);
+void rlImGuiImageRenderTexture(const RenderTexture *image);
 
 /// <summary>
-/// Draws a render texture as an image an ImGui Context, automatically flipping the Y axis so it will show correctly on screen
-/// Fits the render texture to the available content area
+/// Draws a render texture as an image an ImGui Context, automatically flipping the Y axis so it will show correctly on
+/// screen Fits the render texture to the available content area
 /// </summary>
 /// <param name="image">The render texture to draw</param>
 /// <param name="center">When true the image will be centered in the content area</param>
-void rlImGuiImageRenderTextureFit(const RenderTexture* image, bool center);
+void rlImGuiImageRenderTextureFit(const RenderTexture *image, bool center);
 
 /// <summary>
-/// Draws a texture as an image button in an ImGui context. Uses the current ImGui cursor position and the full size of the texture
+/// Draws a texture as an image button in an ImGui context. Uses the current ImGui cursor position and the full size of
+/// the texture
 /// </summary>
 /// <param name="name">The display name and ImGui ID for the button</param>
 /// <param name="image">The texture to draw</param>
 /// <returns>True if the button was clicked</returns>
-bool rlImGuiImageButton(const char* name, const Texture* image);
+bool rlImGuiImageButton(const char *name, const Texture *image);
 
 /// <summary>
-/// Draws a texture as an image button in an ImGui context. Uses the current ImGui cursor position and the specified size.
+/// Draws a texture as an image button in an ImGui context. Uses the current ImGui cursor position and the specified
+/// size.
 /// </summary>
 /// <param name="name">The display name and ImGui ID for the button</param>
 /// <param name="image">The texture to draw</param>
 /// <param name="size">The size of the button</param>
 /// <returns>True if the button was clicked</returns>
-bool rlImGuiImageButtonSize(const char* name, const Texture* image, struct ImVec2 size);
+bool rlImGuiImageButtonSize(const char *name, const Texture *image, struct ImVec2 size);
 
 #ifdef __cplusplus
 }

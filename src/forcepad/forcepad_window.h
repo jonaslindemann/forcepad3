@@ -5,16 +5,20 @@
 
 #include <raylib.h>
 #include <gui/raylib_window.h>
+#include <gui/about_window.h>
+#include <gui/toolbar_window.h>
+#include <gui/color_picker.h>
+#include <gui/layer_window.h>
+#include <gui/line_prop_window.h>
+
 #include <graphics/raylib_image.h>
 #include <graphics/raylib_texture.h>
 #include <graphics/raylib_render_texture.h>
 #include <graphics/brush.h>
 #include <graphics/drawing.h>
-
-#include <gui/about_window.h>
-#include <gui/toolbar_window.h>
-#include <gui/color_picker.h>
-#include <gui/layer_window.h>
+#include <graphics/rectangle.h>
+#include <graphics/ellipse.h>
+#include <graphics/line.h>
 
 namespace forcepad {
 
@@ -73,6 +77,19 @@ private:
     gui::ToolbarWindowPtr m_toolbarWindow;
     gui::ColorPickerPtr m_colorPicker;
     gui::LayerWindowPtr m_layerWindow;
+    gui::LinePropWindowPtr m_linePropWindow;
+
+    float m_mouseX{-1};
+    float m_mouseY{-1};
+    float m_mouseDownX{-1};
+    float m_mouseDownY{-1};
+    float m_mouseUpX{-1};
+    float m_mouseUpY{-1};
+    bool m_mouseDown{false};
+
+    graphics::RectanglePtr m_newRectangle;
+    graphics::EllipsePtr m_newEllipse;
+    graphics::LinePtr m_newLine;
 
 public:
     ForcePadWindow(int width, int height, std::string title);

@@ -17,8 +17,8 @@ private:
     bool m_visible{true};
     bool m_outline{false};
     bool m_hover{false};
-    float m_strokeWidth{1.0f};
-    float m_outlineWidth{1.0f};
+    float m_strokeWidth{5.0f};
+    float m_outlineWidth{5.0f};
 
 public:
     Shape() = default;

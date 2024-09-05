@@ -2,6 +2,8 @@
 
 using namespace graphics;
 
+#include <cmath>
+
 std::shared_ptr<Ellipse> graphics::Ellipse::create()
 {
     return std::make_shared<Ellipse>();
@@ -19,7 +21,7 @@ Vector2 graphics::Ellipse::p0() const
 
 void graphics::Ellipse::setRadiusX(float radiusX)
 {
-    m_radiusX = radiusX;
+    m_radiusX = std::fabs(radiusX);
 }
 
 float graphics::Ellipse::radiusX() const
@@ -29,7 +31,7 @@ float graphics::Ellipse::radiusX() const
 
 void graphics::Ellipse::setRadiusY(float radiusY)
 {
-    m_radiusY = radiusY;
+    m_radiusY = std::fabs(radiusY);
 }
 
 float graphics::Ellipse::radiusY() const

@@ -2,15 +2,25 @@
 
 #include <graphics/rectangle.h>
 #include <graphics/ellipse.h>
+#include <graphics/rectangle_manipulator.h>
 
 #include <cmath>
 #include <ranges>
 
 using namespace graphics;
 
-Drawing::Drawing(int width, int height) : m_width(width), m_height(height), m_currentLayer(0)
+Drawing::Drawing(int width, int height)
+    : m_width(width), m_height(height), m_currentLayer(0), m_mouseX(-1.0f), m_mouseY(-1.0f), m_currentShape(nullptr),
+      m_newShape(nullptr), m_manipulationLayer(nullptr)
 {
     addLayer();
+    m_manipulationLayer = Layer::create(width, height, this);
+
+    auto rectManipulator = RectangleManipulator::create();
+    rectManipulator->setP0(Vector2{100.0f, 100.0f});
+    rectManipulator->setP1(Vector2{300.0f, 200.0f});
+
+    m_manipulationLayer->addShape(rectManipulator);
 }
 
 std::shared_ptr<Drawing> graphics::Drawing::create(int width, int height)
@@ -62,6 +72,8 @@ void Drawing::draw()
         }
     }
 
+    m_manipulationLayer->updateMouse(mouseX(), mouseY());
+
     for (auto &layer : m_layers)
     {
         if (layer->visible())
@@ -70,10 +82,15 @@ void Drawing::draw()
         }
     }
 
+    m_manipulationLayer->draw();
+
     if (m_currentShape != nullptr)
         m_currentShape->setHover(false);
 
     m_currentShape = nullptr;
+
+    if (m_newShape != nullptr)
+        m_newShape->draw();
 }
 
 void Drawing::endDraw()
@@ -84,6 +101,21 @@ void Drawing::endDraw()
 void Drawing::setCurrentLayer(int index)
 {
     m_currentLayer = index;
+}
+
+void graphics::Drawing::setNewShape(ShapePtr shape)
+{
+    m_newShape = shape;
+}
+
+ShapePtr graphics::Drawing::newShape()
+{
+    return m_newShape;
+}
+
+void graphics::Drawing::clearNewShape()
+{
+    m_newShape = nullptr;
 }
 
 LayerPtr Drawing::currentLayer()
@@ -115,7 +147,6 @@ size_t Drawing::layerCount() const
 {
     return m_layers.size();
 }
-
 int Drawing::width() const
 {
     return m_width;
@@ -140,6 +171,8 @@ graphics::Layer::Layer(int width, int height, Drawing *drawing) : m_drawing(draw
 {
     m_renderTexture = std::make_shared<RaylibRenderTexture>();
     m_renderTexture->load(width, height);
+
+    /*
 
     for (auto i = 0; i < 20; i++)
     {
@@ -171,6 +204,7 @@ graphics::Layer::Layer(int width, int height, Drawing *drawing) : m_drawing(draw
             this->addShape(rect);
         }
     }
+    */
 }
 
 std::shared_ptr<Layer> graphics::Layer::create(int width, int height, Drawing *drawing)

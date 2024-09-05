@@ -112,21 +112,21 @@ void RaylibApplication::loop()
         if (!ImGui::GetIO().WantCaptureMouse)
         {
 
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && (m_currentMouseButton != MouseButton::LEFT_BUTTON))
             {
                 auto mousePos = GetMousePosition();
                 m_currentMouseButton = MouseButton::LEFT_BUTTON;
                 m_window->onMouseDown(MouseButton::LEFT_BUTTON, mousePos.x, mousePos.y);
             }
 
-            if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+            if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON) && (m_currentMouseButton != MouseButton::RIGHT_BUTTON))
             {
                 auto mousePos = GetMousePosition();
                 m_currentMouseButton = MouseButton::RIGHT_BUTTON;
                 m_window->onMouseDown(MouseButton::RIGHT_BUTTON, mousePos.x, mousePos.y);
             }
 
-            if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
+            if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && (m_currentMouseButton != MouseButton::MIDDLE_BUTTON))
             {
                 auto mousePos = GetMousePosition();
                 m_currentMouseButton = MouseButton::MIDDLE_BUTTON;

@@ -28,6 +28,9 @@ public:
     void setSize(Vector2 size);
     Vector2 size() const;
 
+    Vector2 upperLeft();
+    Vector2 lowerRight();
+
     virtual void doDraw() override;
     virtual void doDrawOutline() override;
     virtual void doDrawHover() override;
