@@ -62,3 +62,9 @@ bool graphics::Ellipse::doIsInside(float x, float y)
     auto dy = y - m_p0.y;
     return (dx * dx) / (m_radiusX * m_radiusX) + (dy * dy) / (m_radiusY * m_radiusY) <= 1.0f;
 }
+
+void graphics::Ellipse::doMove(float x, float y)
+{
+    m_p0.x = x;
+    m_p0.y = y;
+}

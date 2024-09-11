@@ -85,3 +85,10 @@ bool graphics::Line::doIsInside(float x, float y)
     // Check if the distance is within the line width (including margin)
     return distance <= halfWidth;
 }
+
+void graphics::Line::doMove(float x, float y)
+{
+    Vector2 delta = Vector2Subtract({x, y}, m_p0);
+    m_p0 = Vector2Add(m_p0, delta);
+    m_p1 = Vector2Add(m_p1, delta);
+}

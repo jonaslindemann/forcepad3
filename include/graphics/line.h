@@ -26,6 +26,7 @@ public:
     virtual void doDrawOutline() override;
     virtual void doDrawHover() override;
     virtual bool doIsInside(float x, float y) override;
+    virtual void doMove(float x, float y) override;
 };
 
 using LinePtr = std::shared_ptr<Line>;

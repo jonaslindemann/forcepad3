@@ -131,3 +131,8 @@ bool graphics::Shape::isInside(float x, float y)
 {
     return doIsInside(x, y);
 }
+
+void graphics::Shape::move(float x, float y)
+{
+    doMove(x, y);
+}

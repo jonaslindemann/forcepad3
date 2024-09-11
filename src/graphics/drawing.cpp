@@ -11,7 +11,7 @@ using namespace graphics;
 
 Drawing::Drawing(int width, int height)
     : m_width(width), m_height(height), m_currentLayer(0), m_mouseX(-1.0f), m_mouseY(-1.0f), m_currentShape(nullptr),
-      m_newShape(nullptr), m_manipulationLayer(nullptr)
+      m_newShape(nullptr), m_manipulationLayer(nullptr), m_currentHandle(nullptr)
 {
     addLayer();
     m_manipulationLayer = Layer::create(width, height, this);
@@ -46,9 +46,19 @@ void graphics::Drawing::updateCurrentShape(Shape *shape)
     m_currentShape = shape;
 }
 
+void graphics::Drawing::updateCurrentHandle(ManipulatorHandle *handle)
+{
+    m_currentHandle = handle;
+}
+
 Shape *graphics::Drawing::currentShape()
 {
     return m_currentShape;
+}
+
+ManipulatorHandle *graphics::Drawing::currentHandle()
+{
+    return m_currentHandle;
 }
 
 void Drawing::beginDraw()
@@ -83,6 +93,7 @@ void Drawing::draw()
     }
 
     m_manipulationLayer->draw();
+    m_manipulationLayer->checkHandle();
 
     if (m_currentShape != nullptr)
         m_currentShape->setHover(false);
@@ -171,40 +182,6 @@ graphics::Layer::Layer(int width, int height, Drawing *drawing) : m_drawing(draw
 {
     m_renderTexture = std::make_shared<RaylibRenderTexture>();
     m_renderTexture->load(width, height);
-
-    /*
-
-    for (auto i = 0; i < 20; i++)
-    {
-        auto choice = GetRandomValue(0, 1);
-
-        if (choice == 0)
-        {
-            auto ellipse = Ellipse::create();
-            ellipse->setOutline(false);
-            ellipse->setOutlineWidth(2.0f);
-            ellipse->setP0(Vector2{float(GetRandomValue(0, width)), float(GetRandomValue(0, height))});
-            ellipse->setRadiusX(float(GetRandomValue(0, width) * 0.1));
-            ellipse->setRadiusY(float(GetRandomValue(0, height) * 0.1));
-            ellipse->setFillColor(Color{(unsigned char)GetRandomValue(0, 255), (unsigned char)GetRandomValue(0, 255),
-                                        (unsigned char)GetRandomValue(0, 255), 255});
-            ellipse->setStrokeWidth(2.0f);
-            this->addShape(ellipse);
-        }
-        else if (choice == 1)
-        {
-            auto rect = Rectangle::create();
-            rect->setOutline(false);
-            rect->setOutlineWidth(2.0f);
-            rect->setP0(Vector2{float(GetRandomValue(0, width)), float(GetRandomValue(0, height))});
-            rect->setSize(Vector2{float(GetRandomValue(0, width) * 0.1), float(GetRandomValue(0, height) * 0.1)});
-            rect->setFillColor(Color{(unsigned char)GetRandomValue(0, 255), (unsigned char)GetRandomValue(0, 255),
-                                     (unsigned char)GetRandomValue(0, 255), 255});
-            rect->setStrokeWidth(2.0f);
-            this->addShape(rect);
-        }
-    }
-    */
 }
 
 std::shared_ptr<Layer> graphics::Layer::create(int width, int height, Drawing *drawing)
@@ -322,6 +299,27 @@ void graphics::Layer::checkHover()
         else
         {
             shape->setHover(false);
+        }
+    }
+}
+
+void graphics::Layer::checkHandle()
+{
+    ManipulatorHandle *currentHandle = nullptr;
+    m_drawing->updateCurrentHandle(nullptr);
+
+    for (auto &shape : m_shapes | std::views::reverse)
+    {
+        if (auto manipulator = std::dynamic_pointer_cast<Manipulator>(shape))
+        {
+            for (auto &handle : manipulator->handles())
+            {
+                if (handle->isInside(mouseX(), mouseY()) && (currentHandle == nullptr))
+                {
+                    m_drawing->updateCurrentHandle(handle.get());
+                    currentHandle = m_drawing->currentHandle();
+                }
+            }
         }
     }
 }

@@ -426,6 +426,14 @@ void forcepad::ForcePadWindow::onMouseDown(gui::MouseButton button, float x, flo
         m_newLine->setP1(Vector2{x, y});
         m_drawing->setNewShape(m_newLine);
     }
+
+    if (m_drawingMode == DrawingMode::SelectShape)
+    {
+        if (m_drawing->currentHandle() != nullptr)
+        {
+            std::printf("handle selected\n");
+        }
+    }
     /*
     else if (m_drawingMode == DrawingMode::SelectRect)
     {
@@ -472,6 +480,17 @@ void ForcePadWindow::onMouseMove(float x, float y)
         if (m_newLine != nullptr)
             m_newLine->setP1(Vector2{x, y});
     }
+
+    if (m_drawingMode == DrawingMode::SelectShape)
+    {
+        if (m_mouseDown)
+        {
+            if (m_drawing->currentHandle() != nullptr)
+            {
+                m_drawing->currentHandle()->move(x, y);
+            }
+        }
+    }
 }
 
 void forcepad::ForcePadWindow::onMouseReleased(gui::MouseButton button, float x, float y)
@@ -511,6 +530,9 @@ void forcepad::ForcePadWindow::onMouseReleased(gui::MouseButton button, float x,
             m_newLine = nullptr;
         }
     }
+
+    if (m_drawingMode == DrawingMode::SelectShape)
+    {}
 }
 
 void ForcePadWindow::onKeyPressed(int key)

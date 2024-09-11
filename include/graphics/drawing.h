@@ -8,6 +8,7 @@
 
 #include <graphics/raylib_render_texture.h>
 #include <graphics/shape.h>
+#include <graphics/manipulator_handle.h>
 
 namespace graphics {
 
@@ -61,6 +62,7 @@ public:
 
     void draw();
     void checkHover();
+    void checkHandle();
 
     float mouseX() const;
     float mouseY() const;
@@ -79,6 +81,7 @@ private:
     float m_mouseY{-1.0f};
 
     Shape *m_currentShape{nullptr};
+    ManipulatorHandle *m_currentHandle{nullptr};
 
     ShapePtr m_newShape{nullptr};
 
@@ -91,7 +94,9 @@ public:
 
     void updateMouse(float x, float y);
     void updateCurrentShape(Shape *shape);
+    void updateCurrentHandle(ManipulatorHandle *handle);
     Shape *currentShape();
+    ManipulatorHandle *currentHandle();
 
     void beginDraw();
     void draw();

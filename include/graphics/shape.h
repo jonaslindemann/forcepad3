@@ -60,11 +60,14 @@ public:
 
     bool isInside(float x, float y);
 
+    void move(float x, float y);
+
 protected:
     virtual void doDraw() = 0;
     virtual void doDrawOutline() = 0;
     virtual bool doIsInside(float x, float y) = 0;
     virtual void doDrawHover() = 0;
+    virtual void doMove(float x, float y) = 0;
 };
 
 using ShapePtr = std::shared_ptr<Shape>;

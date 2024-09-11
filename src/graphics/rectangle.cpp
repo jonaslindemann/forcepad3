@@ -113,3 +113,14 @@ bool graphics::Rectangle::doIsInside(float x, float y)
 
     return (x >= p0.x && x <= p1.x && y >= p0.y && y <= p1.y);
 }
+
+void graphics::Rectangle::doMove(float x, float y)
+{
+    Vector2 p0 = upperLeft();
+    Vector2 p1 = lowerRight();
+
+    Vector2 vSize = {p1.x - p0.x, p1.y - p0.y};
+
+    m_p0 = {x, y};
+    m_p1 = {x + vSize.x, y + vSize.y};
+}
