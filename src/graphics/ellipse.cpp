@@ -68,3 +68,16 @@ void graphics::Ellipse::doMove(float x, float y)
     m_p0.x = x;
     m_p0.y = y;
 }
+
+graphics::BoundingBox graphics::Ellipse::doUpdateBoundingBox()
+{
+    return BoundingBox(m_p0.x - m_radiusX, m_p0.y - m_radiusY, m_p0.x + m_radiusX, m_p0.y + m_radiusY);
+}
+
+void graphics::Ellipse::doUpdateFromBounds(const BoundingBox &bounds)
+{
+    m_p0.x = (bounds.left() + bounds.right()) / 2.0f;
+    m_p0.y = (bounds.top() + bounds.bottom()) / 2.0f;
+    m_radiusX = (bounds.right() - bounds.left()) / 2.0f;
+    m_radiusY = (bounds.bottom() - bounds.top()) / 2.0f;
+}

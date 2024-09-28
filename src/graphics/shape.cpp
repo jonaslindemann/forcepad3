@@ -136,3 +136,68 @@ void graphics::Shape::move(float x, float y)
 {
     doMove(x, y);
 }
+
+graphics::BoundingBox &graphics::Shape::boundingBox()
+{
+    m_boundingBox = doUpdateBoundingBox();
+    return m_boundingBox;
+}
+
+void graphics::Shape::updateFromBounds(const BoundingBox &bounds)
+{
+    doUpdateFromBounds(bounds);
+}
+
+graphics::BoundingBox::BoundingBox(float left, float top, float right, float bottom)
+    : m_left(left), m_top(top), m_right(right), m_bottom(bottom)
+{}
+
+void graphics::BoundingBox::setLeft(float left)
+{
+    m_left = left;
+}
+
+float graphics::BoundingBox::left() const
+{
+    return m_left;
+}
+
+void graphics::BoundingBox::setTop(float top)
+{
+    m_top = top;
+}
+
+float graphics::BoundingBox::top() const
+{
+    return m_top;
+}
+
+void graphics::BoundingBox::setRight(float right)
+{
+    m_right = right;
+}
+
+float graphics::BoundingBox::right() const
+{
+    return m_right;
+}
+
+void graphics::BoundingBox::setBottom(float bottom)
+{
+    m_bottom = bottom;
+}
+
+float graphics::BoundingBox::bottom() const
+{
+    return m_bottom;
+}
+
+float graphics::BoundingBox::width() const
+{
+    return abs(m_right - m_left);
+}
+
+float graphics::BoundingBox::height() const
+{
+    return abs(m_bottom - m_top);
+}

@@ -189,3 +189,13 @@ void graphics::RectangleManipulator::doUpdate(ManipulatorHandle *handle)
 
     updateHandles();
 }
+
+graphics::BoundingBox graphics::RectangleManipulator::doUpdateBoundingBox()
+{
+    Vector2 p0 = upperLeft();
+    Vector2 p1 = lowerRight();
+    return BoundingBox(p0.x, p0.y, p1.x, p1.y);
+}
+
+void graphics::RectangleManipulator::doUpdateFromBounds(const BoundingBox &bounds)
+{}

@@ -31,6 +31,8 @@ public:
     virtual bool doIsInside(float x, float y) override;
     virtual void doMove(float x, float y) override;
     virtual void doUpdate(ManipulatorHandle *handle);
+    virtual BoundingBox doUpdateBoundingBox() override;
+    virtual void doUpdateFromBounds(const BoundingBox &bounds) override;
 };
 
 } // namespace graphics

@@ -36,6 +36,8 @@ public:
     virtual void doDrawHover() override;
     virtual bool doIsInside(float x, float y) override;
     virtual void doMove(float x, float y) override;
+    virtual BoundingBox doUpdateBoundingBox() override;
+    virtual void doUpdateFromBounds(const BoundingBox &bounds) override;
 };
 
 using RectanglePtr = std::shared_ptr<Rectangle>;

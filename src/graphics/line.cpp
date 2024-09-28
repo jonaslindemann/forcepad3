@@ -92,3 +92,50 @@ void graphics::Line::doMove(float x, float y)
     m_p0 = Vector2Add(m_p0, delta);
     m_p1 = Vector2Add(m_p1, delta);
 }
+
+graphics::BoundingBox graphics::Line::doUpdateBoundingBox()
+{
+    return BoundingBox(std::min(m_p0.x, m_p1.x), std::min(m_p0.y, m_p1.y), std::max(m_p0.x, m_p1.x),
+                       std::max(m_p0.y, m_p1.y));
+}
+
+void graphics::Line::doUpdateFromBounds(const BoundingBox &bounds)
+{
+    //                 m_p1
+    //  + ------------- +
+    //  |             / |
+    //  |           /   |
+    //  |         /     |
+    //  |       /       |
+    //  |     /         |
+    //  |   /           |
+    //  | /             |
+    //  + ------------- +
+    // m_p0
+    //
+
+    std::printf("bounds: left: %f, top: %f, right: %f, bottom: %f\n", bounds.left(), bounds.top(), bounds.right(),
+                bounds.bottom());
+
+    if (m_p0.x < m_p1.x)
+    {
+        m_p0.x = bounds.left();
+        m_p1.x = bounds.right();
+    }
+    else
+    {
+        m_p0.x = bounds.right();
+        m_p1.x = bounds.left();
+    }
+
+    if (m_p0.y < m_p1.y)
+    {
+        m_p0.y = bounds.top();
+        m_p1.y = bounds.bottom();
+    }
+    else
+    {
+        m_p0.y = bounds.bottom();
+        m_p1.y = bounds.top();
+    }
+}

@@ -86,6 +86,7 @@ private:
     float m_mouseUpX{-1};
     float m_mouseUpY{-1};
     bool m_mouseDown{false};
+    bool m_handleMoved{false};
 
     graphics::RectanglePtr m_newRectangle;
     graphics::EllipsePtr m_newEllipse;

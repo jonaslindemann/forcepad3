@@ -11,16 +11,13 @@ using namespace graphics;
 
 Drawing::Drawing(int width, int height)
     : m_width(width), m_height(height), m_currentLayer(0), m_mouseX(-1.0f), m_mouseY(-1.0f), m_currentShape(nullptr),
-      m_newShape(nullptr), m_manipulationLayer(nullptr), m_currentHandle(nullptr)
+      m_newShape(nullptr), m_manipulationLayer(nullptr), m_currentHandle(nullptr), m_rectangleManipulator(nullptr)
 {
     addLayer();
     m_manipulationLayer = Layer::create(width, height, this);
-
-    auto rectManipulator = RectangleManipulator::create();
-    rectManipulator->setP0(Vector2{100.0f, 100.0f});
-    rectManipulator->setP1(Vector2{300.0f, 200.0f});
-
-    m_manipulationLayer->addShape(rectManipulator);
+    m_rectangleManipulator = RectangleManipulator::create();
+    m_rectangleManipulator->setVisible(false);
+    m_manipulationLayer->addShape(m_rectangleManipulator);
 }
 
 std::shared_ptr<Drawing> graphics::Drawing::create(int width, int height)
@@ -168,6 +165,76 @@ int Drawing::height() const
     return m_height;
 }
 
+Shape *graphics::Drawing::shapeAt(float x, float y)
+{
+    for (auto &layer : m_layers | std::views::reverse)
+    {
+        if (auto shape = layer->shapeAt(x, y))
+        {
+            return shape;
+        }
+    }
+
+    return nullptr;
+}
+
+void graphics::Drawing::select()
+{
+    this->clearSelection();
+
+    auto selectedShape = this->shapeAt(mouseX(), mouseY());
+
+    std::printf("Selected shape: %p\n", selectedShape);
+
+    if (selectedShape != nullptr)
+        m_selectedShapes.push_back(selectedShape);
+
+    std::printf("Selected shapes: %zu\n", m_selectedShapes.size());
+
+    if (m_selectedShapes.size() == 1)
+    {
+        m_rectangleManipulator->setVisible(true);
+        m_rectangleManipulator->setP0(
+            Vector2(m_selectedShapes[0]->boundingBox().left(), m_selectedShapes[0]->boundingBox().top()));
+        m_rectangleManipulator->setP1(
+            Vector2(m_selectedShapes[0]->boundingBox().right(), m_selectedShapes[0]->boundingBox().bottom()));
+    }
+    else
+    {
+        m_rectangleManipulator->setVisible(false);
+    }
+}
+
+void graphics::Drawing::deselect()
+{}
+
+void graphics::Drawing::clearSelection()
+{
+    m_selectedShapes.clear();
+}
+
+void graphics::Drawing::updateBoundsSelection()
+{
+    if (m_selectedShapes.size() == 1)
+    {
+        m_selectedShapes[0]->updateFromBounds(m_rectangleManipulator->boundingBox());
+    }
+}
+
+void graphics::Drawing::deleteSelected()
+{
+    for (auto &shape : m_selectedShapes)
+    {
+        for (auto &layer : m_layers)
+        {
+            layer->removeShape(m_selectedShapes[0]);
+        }
+    }
+
+    m_selectedShapes.clear();
+    m_rectangleManipulator->setVisible(false);
+}
+
 float graphics::Drawing::mouseX() const
 {
     return m_mouseX;
@@ -270,6 +337,13 @@ void graphics::Layer::addShape(std::shared_ptr<Shape> shape)
     m_shapes.push_back(shape);
 }
 
+void graphics::Layer::removeShape(Shape *shape)
+{
+    m_shapes.erase(std::remove_if(m_shapes.begin(), m_shapes.end(),
+                                  [shape](const std::shared_ptr<Shape> &s) { return s.get() == shape; }),
+                   m_shapes.end());
+}
+
 void graphics::Layer::draw()
 {
     m_renderTexture->draw(0, 0, m_tint);
@@ -322,6 +396,19 @@ void graphics::Layer::checkHandle()
             }
         }
     }
+}
+
+Shape *graphics::Layer::shapeAt(float x, float y)
+{
+    for (auto &shape : m_shapes | std::views::reverse)
+    {
+        if (shape->isInside(x, y))
+        {
+            return shape.get();
+        }
+    }
+
+    return nullptr;
 }
 
 float graphics::Layer::mouseX() const

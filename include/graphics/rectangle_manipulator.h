@@ -44,6 +44,8 @@ public:
     virtual void doDrawHover() override;
     virtual bool doIsInside(float x, float y) override;
     virtual void doUpdate(ManipulatorHandle *handle) override;
+    virtual BoundingBox doUpdateBoundingBox() override;
+    virtual void doUpdateFromBounds(const BoundingBox &bounds) override;
 };
 
 using RectangleManipulatorPtr = std::shared_ptr<RectangleManipulator>;

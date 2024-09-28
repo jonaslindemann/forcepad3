@@ -87,3 +87,11 @@ void graphics::Manipulator::doMove(float x, float y)
 
 void graphics::Manipulator::doUpdate(ManipulatorHandle *handle)
 {}
+
+graphics::BoundingBox graphics::Manipulator::doUpdateBoundingBox()
+{
+    return BoundingBox();
+}
+
+void graphics::Manipulator::doUpdateFromBounds(const BoundingBox &bounds)
+{}

@@ -6,6 +6,34 @@
 
 namespace graphics {
 
+class BoundingBox {
+private:
+    float m_left{0.0f};
+    float m_top{0.0f};
+    float m_right{0.0f};
+    float m_bottom{0.0f};
+
+public:
+    BoundingBox() = default;
+    BoundingBox(float left, float top, float right, float bottom);
+    ~BoundingBox() = default;
+
+    void setLeft(float left);
+    float left() const;
+
+    void setTop(float top);
+    float top() const;
+
+    void setRight(float right);
+    float right() const;
+
+    void setBottom(float bottom);
+    float bottom() const;
+
+    float width() const;
+    float height() const;
+};
+
 class Shape {
 private:
     Color m_fillColor{YELLOW};
@@ -19,6 +47,8 @@ private:
     bool m_hover{false};
     float m_strokeWidth{5.0f};
     float m_outlineWidth{5.0f};
+
+    BoundingBox m_boundingBox;
 
 public:
     Shape() = default;
@@ -62,12 +92,18 @@ public:
 
     void move(float x, float y);
 
+    BoundingBox &boundingBox();
+
+    void updateFromBounds(const BoundingBox &bounds);
+
 protected:
     virtual void doDraw() = 0;
     virtual void doDrawOutline() = 0;
     virtual bool doIsInside(float x, float y) = 0;
     virtual void doDrawHover() = 0;
     virtual void doMove(float x, float y) = 0;
+    virtual BoundingBox doUpdateBoundingBox() = 0;
+    virtual void doUpdateFromBounds(const BoundingBox &bounds) = 0;
 };
 
 using ShapePtr = std::shared_ptr<Shape>;

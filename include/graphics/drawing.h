@@ -9,6 +9,7 @@
 #include <graphics/raylib_render_texture.h>
 #include <graphics/shape.h>
 #include <graphics/manipulator_handle.h>
+#include <graphics/rectangle_manipulator.h>
 
 namespace graphics {
 
@@ -60,9 +61,13 @@ public:
 
     void addShape(std::shared_ptr<Shape> shape);
 
+    void removeShape(Shape *shape);
+
     void draw();
     void checkHover();
     void checkHandle();
+
+    Shape *shapeAt(float x, float y);
 
     float mouseX() const;
     float mouseY() const;
@@ -82,8 +87,11 @@ private:
 
     Shape *m_currentShape{nullptr};
     ManipulatorHandle *m_currentHandle{nullptr};
+    RectangleManipulatorPtr m_rectangleManipulator{nullptr};
 
     ShapePtr m_newShape{nullptr};
+
+    std::vector<Shape *> m_selectedShapes;
 
 public:
     Drawing(int width, int height);
@@ -95,6 +103,7 @@ public:
     void updateMouse(float x, float y);
     void updateCurrentShape(Shape *shape);
     void updateCurrentHandle(ManipulatorHandle *handle);
+
     Shape *currentShape();
     ManipulatorHandle *currentHandle();
 
@@ -115,6 +124,15 @@ public:
     size_t layerCount() const;
     int width() const;
     int height() const;
+
+    Shape *shapeAt(float x, float y);
+
+    void select();
+    void deselect();
+    void clearSelection();
+    void updateBoundsSelection();
+
+    void deleteSelected();
 
     float mouseX() const;
     float mouseY() const;

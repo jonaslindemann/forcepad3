@@ -64,7 +64,7 @@ void graphics::ManipulatorHandle::doDrawHover()
 
 bool graphics::ManipulatorHandle::doIsInside(float x, float y)
 {
-    return CheckCollisionPointCircle({x, y}, m_position, m_radius * 1.5);
+    return CheckCollisionPointCircle({x, y}, m_position, m_radius * 2.0);
 }
 
 void graphics::ManipulatorHandle::doMove(float x, float y)
@@ -77,3 +77,11 @@ void graphics::ManipulatorHandle::doMove(float x, float y)
         m_manipulator->update(this);
     }
 }
+
+graphics::BoundingBox graphics::ManipulatorHandle::doUpdateBoundingBox()
+{
+    return BoundingBox();
+}
+
+void graphics::ManipulatorHandle::doUpdateFromBounds(const BoundingBox &bounds)
+{}

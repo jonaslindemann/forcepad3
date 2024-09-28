@@ -124,3 +124,16 @@ void graphics::Rectangle::doMove(float x, float y)
     m_p0 = {x, y};
     m_p1 = {x + vSize.x, y + vSize.y};
 }
+
+graphics::BoundingBox graphics::Rectangle::doUpdateBoundingBox()
+{
+    Vector2 p0 = upperLeft();
+    Vector2 p1 = lowerRight();
+    return BoundingBox(p0.x, p0.y, p1.x, p1.y);
+}
+
+void graphics::Rectangle::doUpdateFromBounds(const BoundingBox &bounds)
+{
+    m_p0 = {bounds.left(), bounds.top()};
+    m_p1 = {bounds.right(), bounds.bottom()};
+}
