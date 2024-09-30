@@ -199,3 +199,48 @@ graphics::BoundingBox graphics::RectangleManipulator::doUpdateBoundingBox()
 
 void graphics::RectangleManipulator::doUpdateFromBounds(const BoundingBox &bounds)
 {}
+
+void graphics::RectangleManipulator::doMove(float x, float y)
+{
+    auto p0 = upperLeft();
+    auto p1 = lowerRight();
+
+    auto vSize = Vector2{p1.x - p0.x, p1.y - p0.y};
+
+    m_p0 = {x, y};
+    m_p1 = {x + vSize.x, y + vSize.y};
+
+    updateHandles();
+}
+
+void graphics::RectangleManipulator::doTranslate(float dx, float dy)
+{
+    m_p0.x += dx;
+    m_p0.y += dy;
+    m_p1.x += dx;
+    m_p1.y += dy;
+
+    updateHandles();
+}
+
+void graphics::RectangleManipulator::doSetPos(float x, float y)
+{
+    auto p0 = upperLeft();
+    auto p1 = lowerRight();
+
+    auto vSize = Vector2{p1.x - p0.x, p1.y - p0.y};
+
+    m_p0 = {x, y};
+    m_p1 = {x + vSize.x, y + vSize.y};
+
+    updateHandles();
+}
+
+void graphics::RectangleManipulator::doGetPos(float &x, float &y)
+{
+    Vector2 p0 = upperLeft();
+    Vector2 p1 = lowerRight();
+
+    x = p0.x;
+    y = p0.y;
+}

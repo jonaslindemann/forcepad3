@@ -85,8 +85,15 @@ private:
     float m_mouseDownY{-1};
     float m_mouseUpX{-1};
     float m_mouseUpY{-1};
+    float m_mouseDeltaX{0};
+    float m_mouseDeltaY{0};
     bool m_mouseDown{false};
     bool m_handleMoved{false};
+
+    float m_pickOffsetX{0};
+    float m_pickOffsetY{0};
+
+    graphics::Shape *m_selectedShape{nullptr};
 
     graphics::RectanglePtr m_newRectangle;
     graphics::EllipsePtr m_newEllipse;

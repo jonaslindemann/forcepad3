@@ -85,6 +85,14 @@ bool graphics::Manipulator::doIsInside(float x, float y)
 void graphics::Manipulator::doMove(float x, float y)
 {}
 
+void graphics::Manipulator::doTranslate(float dx, float dy)
+{
+    for (auto &handle : m_handles)
+    {
+        handle->translate(dx, dy);
+    }
+}
+
 void graphics::Manipulator::doUpdate(ManipulatorHandle *handle)
 {}
 
@@ -94,4 +102,10 @@ graphics::BoundingBox graphics::Manipulator::doUpdateBoundingBox()
 }
 
 void graphics::Manipulator::doUpdateFromBounds(const BoundingBox &bounds)
+{}
+
+void graphics::Manipulator::doSetPos(float x, float y)
+{}
+
+void graphics::Manipulator::doGetPos(float &x, float &y)
 {}

@@ -132,9 +132,39 @@ bool graphics::Shape::isInside(float x, float y)
     return doIsInside(x, y);
 }
 
+bool graphics::Shape::isInsideBbox(float x, float y)
+{
+    return boundingBox().isInside(x, y);
+}
+
 void graphics::Shape::move(float x, float y)
 {
     doMove(x, y);
+}
+
+void graphics::Shape::translate(float dx, float dy)
+{
+    doTranslate(dx, dy);
+}
+
+void graphics::Shape::setPos(float x, float y)
+{
+    doSetPos(x, y);
+}
+
+void graphics::Shape::getPos(float &x, float &y)
+{
+    doGetPos(x, y);
+}
+
+void graphics::Shape::setRotation(float rotation)
+{
+    m_rotation = rotation;
+}
+
+float graphics::Shape::rotation() const
+{
+    return m_rotation;
 }
 
 graphics::BoundingBox &graphics::Shape::boundingBox()
@@ -200,4 +230,9 @@ float graphics::BoundingBox::width() const
 float graphics::BoundingBox::height() const
 {
     return abs(m_bottom - m_top);
+}
+
+bool graphics::BoundingBox::isInside(float x, float y)
+{
+    return x >= m_left && x <= m_right && y >= m_top && y <= m_bottom;
 }

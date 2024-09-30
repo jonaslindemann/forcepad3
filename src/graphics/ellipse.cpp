@@ -42,18 +42,21 @@ float graphics::Ellipse::radiusY() const
 void graphics::Ellipse::doDraw()
 {
     DrawEllipse(m_p0.x, m_p0.y, m_radiusX, m_radiusY, fillColor());
-    DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, strokeColor());
+    if (outline())
+        DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, strokeColor());
 }
 
 void graphics::Ellipse::doDrawOutline()
 {
-    DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, outlineColor());
+    if (outline())
+        DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, outlineColor());
 }
 
 void graphics::Ellipse::doDrawHover()
 {
     DrawEllipse(m_p0.x, m_p0.y, m_radiusX, m_radiusY, hoverColor());
-    DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, hoverOutlineColor());
+    if (outline())
+        DrawEllipseLines(m_p0.x, m_p0.y, m_radiusX, m_radiusY, hoverOutlineColor());
 }
 
 bool graphics::Ellipse::doIsInside(float x, float y)
@@ -69,6 +72,12 @@ void graphics::Ellipse::doMove(float x, float y)
     m_p0.y = y;
 }
 
+void graphics::Ellipse::doTranslate(float dx, float dy)
+{
+    m_p0.x += dx;
+    m_p0.y += dy;
+}
+
 graphics::BoundingBox graphics::Ellipse::doUpdateBoundingBox()
 {
     return BoundingBox(m_p0.x - m_radiusX, m_p0.y - m_radiusY, m_p0.x + m_radiusX, m_p0.y + m_radiusY);
@@ -80,4 +89,16 @@ void graphics::Ellipse::doUpdateFromBounds(const BoundingBox &bounds)
     m_p0.y = (bounds.top() + bounds.bottom()) / 2.0f;
     m_radiusX = (bounds.right() - bounds.left()) / 2.0f;
     m_radiusY = (bounds.bottom() - bounds.top()) / 2.0f;
+}
+
+void graphics::Ellipse::doSetPos(float x, float y)
+{
+    m_p0.x = x;
+    m_p0.y = y;
+}
+
+void graphics::Ellipse::doGetPos(float &x, float &y)
+{
+    x = m_p0.x;
+    y = m_p0.y;
 }

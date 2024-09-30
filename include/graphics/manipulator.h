@@ -30,9 +30,12 @@ public:
     virtual void doDrawHover() override;
     virtual bool doIsInside(float x, float y) override;
     virtual void doMove(float x, float y) override;
+    virtual void doTranslate(float dx, float dy) override;
     virtual void doUpdate(ManipulatorHandle *handle);
     virtual BoundingBox doUpdateBoundingBox() override;
     virtual void doUpdateFromBounds(const BoundingBox &bounds) override;
+    virtual void doSetPos(float x, float y) override;
+    virtual void doGetPos(float &x, float &y) override;
 };
 
 } // namespace graphics

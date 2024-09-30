@@ -78,6 +78,17 @@ void graphics::ManipulatorHandle::doMove(float x, float y)
     }
 }
 
+void graphics::ManipulatorHandle::doTranslate(float dx, float dy)
+{
+    m_position.x += dx;
+    m_position.y += dy;
+
+    if (m_manipulator != nullptr)
+    {
+        m_manipulator->update(this);
+    }
+}
+
 graphics::BoundingBox graphics::ManipulatorHandle::doUpdateBoundingBox()
 {
     return BoundingBox();
@@ -85,3 +96,15 @@ graphics::BoundingBox graphics::ManipulatorHandle::doUpdateBoundingBox()
 
 void graphics::ManipulatorHandle::doUpdateFromBounds(const BoundingBox &bounds)
 {}
+
+void graphics::ManipulatorHandle::doSetPos(float x, float y)
+{
+    m_position.x = x;
+    m_position.y = y;
+}
+
+void graphics::ManipulatorHandle::doGetPos(float &x, float &y)
+{
+    x = m_position.x;
+    y = m_position.y;
+}

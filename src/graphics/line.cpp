@@ -48,8 +48,8 @@ void graphics::Line::doDrawHover()
 
 bool graphics::Line::doIsInside(float x, float y)
 {
-    const float margin = 2.0f; // Additional margin for "close to the line" check
-    const float halfWidth = strokeWidth() / 2.0f + margin;
+    const float margin = 5.0f; // Additional margin for "close to the line" check
+    const float halfWidth = strokeWidth() / 5.0f + margin;
 
     // Vector from p0 to p1
     Vector2 lineVec = Vector2Subtract(m_p1, m_p0);
@@ -91,6 +91,12 @@ void graphics::Line::doMove(float x, float y)
     Vector2 delta = Vector2Subtract({x, y}, m_p0);
     m_p0 = Vector2Add(m_p0, delta);
     m_p1 = Vector2Add(m_p1, delta);
+}
+
+void graphics::Line::doTranslate(float dx, float dy)
+{
+    m_p0 = Vector2Add(m_p0, {dx, dy});
+    m_p1 = Vector2Add(m_p1, {dx, dy});
 }
 
 graphics::BoundingBox graphics::Line::doUpdateBoundingBox()
@@ -138,4 +144,17 @@ void graphics::Line::doUpdateFromBounds(const BoundingBox &bounds)
         m_p0.y = bounds.bottom();
         m_p1.y = bounds.top();
     }
+}
+
+void graphics::Line::doSetPos(float x, float y)
+{
+    Vector2 delta = Vector2Subtract({x, y}, m_p0);
+    m_p0 = Vector2Add(m_p0, delta);
+    m_p1 = Vector2Add(m_p1, delta);
+}
+
+void graphics::Line::doGetPos(float &x, float &y)
+{
+    x = m_p0.x;
+    y = m_p0.y;
 }

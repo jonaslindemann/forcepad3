@@ -32,6 +32,8 @@ public:
 
     float width() const;
     float height() const;
+
+    bool isInside(float x, float y);
 };
 
 class Shape {
@@ -47,6 +49,8 @@ private:
     bool m_hover{false};
     float m_strokeWidth{5.0f};
     float m_outlineWidth{5.0f};
+
+    float m_rotation{0.0f};
 
     BoundingBox m_boundingBox;
 
@@ -89,8 +93,17 @@ public:
     void draw();
 
     bool isInside(float x, float y);
+    bool isInsideBbox(float x, float y);
 
     void move(float x, float y);
+
+    void translate(float dx, float dy);
+
+    void setPos(float x, float y);
+    void getPos(float &x, float &y);
+
+    void setRotation(float rotation);
+    float rotation() const;
 
     BoundingBox &boundingBox();
 
@@ -102,8 +115,11 @@ protected:
     virtual bool doIsInside(float x, float y) = 0;
     virtual void doDrawHover() = 0;
     virtual void doMove(float x, float y) = 0;
+    virtual void doTranslate(float dx, float dy) = 0;
     virtual BoundingBox doUpdateBoundingBox() = 0;
     virtual void doUpdateFromBounds(const BoundingBox &bounds) = 0;
+    virtual void doSetPos(float x, float y) = 0;
+    virtual void doGetPos(float &x, float &y) = 0;
 };
 
 using ShapePtr = std::shared_ptr<Shape>;

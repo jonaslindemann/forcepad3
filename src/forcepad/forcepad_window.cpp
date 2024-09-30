@@ -196,6 +196,7 @@ void ForcePadWindow::onMousePressed(gui::MouseButton button, float x, float y)
             m_drawing->updateBoundsSelection();
             return;
         }
+        m_drawing->clearSelection();
         m_drawing->select();
     }
 }
@@ -207,6 +208,8 @@ void forcepad::ForcePadWindow::onMouseDown(gui::MouseButton button, float x, flo
     m_mouseDown = true;
     m_mouseDownX = x;
     m_mouseDownY = y;
+    m_mouseDeltaX = 0;
+    m_mouseDeltaY = 0;
 
     if (m_drawingMode == DrawingMode::Rectangle)
     {
@@ -241,6 +244,17 @@ void forcepad::ForcePadWindow::onMouseDown(gui::MouseButton button, float x, flo
         m_drawing->setNewShape(m_newLine);
     }
 
+    if (m_drawingMode == DrawingMode::SelectShape)
+    {
+        if (m_drawing->selectedShape() != nullptr)
+        {
+            float sx, sy;
+            m_drawing->selectedShape()->getPos(sx, sy);
+            m_pickOffsetX = x - sx;
+            m_pickOffsetY = y - sy;
+        }
+    }
+
     /*
     else if (m_drawingMode == DrawingMode::SelectRect)
     {
@@ -262,6 +276,9 @@ void ForcePadWindow::onMouseMove(float x, float y)
     // std::printf("mouse moved to %f, %f\n", x, y);
     m_mouseX = x;
     m_mouseY = y;
+
+    m_mouseDeltaX = x - m_mouseDownX;
+    m_mouseDeltaY = y - m_mouseDownY;
 
     if (m_drawingMode == DrawingMode::Rectangle)
     {
@@ -297,6 +314,15 @@ void ForcePadWindow::onMouseMove(float x, float y)
                 m_drawing->currentHandle()->move(x, y);
                 m_drawing->updateBoundsSelection();
                 m_handleMoved = true;
+            }
+            else
+            {
+                if (m_drawing->selectedShape() != nullptr)
+                {
+                    m_drawing->selectedShape()->move(x - m_pickOffsetX, y - m_pickOffsetY);
+                    m_drawing->updateSelectionBounds();
+                    m_handleMoved = true;
+                }
             }
         }
     }
@@ -348,14 +374,14 @@ void ForcePadWindow::onKeyPressed(int key)
 {
     std::printf("key pressed: %d\n", key);
 
-    if (key == 32)
-    {
-        m_drawing->clearSelection();
-    }
-
-    if (key == 261)
+    if (key == KEY_DELETE)
     {
         m_drawing->deleteSelected();
+    }
+
+    if (key == KEY_ESCAPE)
+    {
+        m_drawing->clearSelection();
     }
 }
 

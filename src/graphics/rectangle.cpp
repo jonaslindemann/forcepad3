@@ -80,8 +80,13 @@ void graphics::Rectangle::doDraw()
 
     Vector2 vSize = {p1.x - p0.x, p1.y - p0.y};
 
-    DrawRectangleV(p0, vSize, fillColor());
-    DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, strokeWidth(), strokeColor());
+    // DrawRectangleV(p0, vSize, fillColor());
+    DrawRectanglePro({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, {0.0f, 0.0f}, rotation(),
+                     fillColor());
+
+    if (outline())
+        DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, strokeWidth(),
+                             strokeColor());
 }
 
 void graphics::Rectangle::doDrawOutline()
@@ -89,7 +94,9 @@ void graphics::Rectangle::doDrawOutline()
     Vector2 p0 = upperLeft();
     Vector2 p1 = lowerRight();
 
-    DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, outlineWidth(), outlineColor());
+    if (outline())
+        DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, outlineWidth(),
+                             outlineColor());
 }
 
 void graphics::Rectangle::doDrawHover()
@@ -99,9 +106,11 @@ void graphics::Rectangle::doDrawHover()
 
     Vector2 vSize = {p1.x - p0.x, p1.y - p0.y};
 
-    DrawRectangleV(p0, vSize, hoverColor());
-    DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, strokeWidth(),
-                         hoverOutlineColor());
+    DrawRectanglePro({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, {0.0f, 0.0f}, rotation(),
+                     hoverColor());
+    if (outline())
+        DrawRectangleLinesEx({p0.x, p0.y, std::fabs(p1.x - p0.x), std::fabs(p1.y - p0.y)}, strokeWidth(),
+                             hoverOutlineColor());
 }
 
 bool graphics::Rectangle::doIsInside(float x, float y)
@@ -125,6 +134,14 @@ void graphics::Rectangle::doMove(float x, float y)
     m_p1 = {x + vSize.x, y + vSize.y};
 }
 
+void graphics::Rectangle::doTranslate(float dx, float dy)
+{
+    m_p0.x += dx;
+    m_p0.y += dy;
+    m_p1.x += dx;
+    m_p1.y += dy;
+}
+
 graphics::BoundingBox graphics::Rectangle::doUpdateBoundingBox()
 {
     Vector2 p0 = upperLeft();
@@ -136,4 +153,22 @@ void graphics::Rectangle::doUpdateFromBounds(const BoundingBox &bounds)
 {
     m_p0 = {bounds.left(), bounds.top()};
     m_p1 = {bounds.right(), bounds.bottom()};
+}
+
+void graphics::Rectangle::doSetPos(float x, float y)
+{
+    Vector2 p0 = upperLeft();
+    Vector2 p1 = lowerRight();
+
+    Vector2 vSize = {p1.x - p0.x, p1.y - p0.y};
+
+    m_p0 = {x, y};
+    m_p1 = {x + vSize.x, y + vSize.y};
+}
+
+void graphics::Rectangle::doGetPos(float &x, float &y)
+{
+    Vector2 p0 = upperLeft();
+    x = p0.x;
+    y = p0.y;
 }
